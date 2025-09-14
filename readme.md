@@ -1,8 +1,10 @@
 <p align="center">
  <img width="100px" src="https://res.cloudinary.com/anuraghazra/image/upload/v1594908242/logo_ccswme.svg" align="center" alt="GitHub Readme Stats" />
- <h2 align="center">GitHub Readme Stats</h2>
- <p align="center">Get dynamically generated GitHub stats on your READMEs!</p>
+ <h2 align="center">GitHub Readme Stats Plus</h2>
+ <p align="center">A compatible fork that exposes more data points for stats and pins.</p>
 </p>
+
+> Note: This is a maintained fork of [anuraghazra/github-readme-stats](https://github.com/anuraghazra/github-readme-stats). It preserves upstream behavior and themes while adding optional fields and options such as open issues/PR counts and repository age on the pin card.
 
 <p align="center">
   <a href="https://github.com/anuraghazra/github-readme-stats/actions">
