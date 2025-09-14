@@ -384,6 +384,10 @@ You can customize the appearance and behavior of the pinned repository card usin
 | --- | --- | --- | --- |
 | `show_owner` | Shows the repo's owner name. | boolean | `false` |
 | `description_lines_count` | Manually set the number of lines for the description. Specified value will be clamped between 1 and 3. If this parameter is not specified, the number of lines will be automatically adjusted according to the actual length of the description. | number | `null` |
+| `show_issues` | Shows the count of open issues. | boolean | `false` |
+| `show_prs` | Shows the count of open pull requests. | boolean | `false` |
+| `show_age` | Shows repository age as a compact relative time badge. | boolean | `false` |
+| `age_metric` | Which timestamp to use when `show_age` is enabled: `created` (repo creation), `first` (first commit date), or `pushed` (last push). | enum | `pushed` |
 
 ### Demo
 
@@ -392,6 +396,14 @@ You can customize the appearance and behavior of the pinned repository card usin
 Use `show_owner` query option to include the repo's owner username
 
 ![Readme Card](https://github-readme-stats.vercel.app/api/pin/?username=anuraghazra\&repo=github-readme-stats\&show_owner=true)
+
+Show open issues/PRs and repo age (by last push):
+
+![Readme Card](https://github-readme-stats.vercel.app/api/pin/?username=anuraghazra\&repo=github-readme-stats\&show_issues=true\&show_prs=true\&show_age=true)
+
+Show repo age by first commit date instead of last push:
+
+![Readme Card](https://github-readme-stats.vercel.app/api/pin/?username=anuraghazra\&repo=github-readme-stats\&show_age=true\&age_metric=first)
 
 # GitHub Gist Pins
 
