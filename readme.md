@@ -794,6 +794,20 @@ Since the GitHub API only allows 5k requests per hour, my `https://github-readme
 
 </details>
 
+### Handling Environment URLs (Vercel)
+
+For custom deployments, set a base URL so generated links and previews point at your instance.
+
+- Production (Environment Variables in Vercel):
+  - `BASE_URL` = `https://github-readme-stats-plus-theta.vercel.app`
+- Preview/Development:
+  - Leave `BASE_URL` unset to prefer Vercel’s dynamic URL when available, or fall back to production.
+  - You can also set `BASE_URL` manually to your preview URL if desired.
+
+Notes
+- Scripts resolve the base in this order: `BASE_URL` → `https://$VERCEL_URL` (if available) → production URL.
+- The repository README examples intentionally point to production; preview builds should not commit URL changes.
+
 ## On other platforms
 
 > [!WARNING]\
