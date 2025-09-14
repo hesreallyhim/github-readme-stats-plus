@@ -77,6 +77,10 @@ const renderRepoCard = (repo, options = {}) => {
     border_color,
     locale,
     description_lines_count,
+    show_issues = false,
+    show_prs = false,
+    show_age = false,
+    age_metric = "pushed",
   } = options;
 
   const lineHeight = 10;
@@ -126,6 +130,59 @@ const renderRepoCard = (repo, options = {}) => {
 
   const totalStars = kFormatter(starCount);
   const totalForks = kFormatter(forkCount);
+  const totalIssues = kFormatter(repo.openIssuesCount || 0);
+  const totalPRs = kFormatter(repo.openPrsCount || 0);
+
+  const svgIssues = show_issues
+    ? iconWithLabel(icons.issues, totalIssues, "issues", ICON_SIZE)
+    : "";
+  const svgPRs = show_prs
+    ? iconWithLabel(icons.prs, totalPRs, "prs", ICON_SIZE)
+    : "";
+
+  const formatAge = (iso) => {
+    if (!iso) {
+      return "";
+    }
+    const then = new Date(iso).getTime();
+    const now = Date.now();
+    const sec = Math.max(0, Math.floor((now - then) / 1000));
+    const y = Math.floor(sec / (365 * 24 * 3600));
+    if (y >= 1) {
+      return `${y}y`;
+    }
+    const mo = Math.floor(sec / (30 * 24 * 3600));
+    if (mo >= 1) {
+      return `${mo}mo`;
+    }
+    const d = Math.floor(sec / (24 * 3600));
+    if (d >= 1) {
+      return `${d}d`;
+    }
+    const h = Math.floor(sec / 3600);
+    if (h >= 1) {
+      return `${h}h`;
+    }
+    const m = Math.floor(sec / 60);
+    if (m >= 1) {
+      return `${m}m`;
+    }
+    return `${sec}s`;
+  };
+
+  let ageIso = null;
+  if (age_metric === "created") {
+    ageIso = repo.createdAt || null;
+  } else if (age_metric === "first") {
+    ageIso = repo.firstCommitDate || null;
+  } else {
+    ageIso = repo.pushedAt || null;
+  }
+  const ageLabel = formatAge(ageIso);
+  const svgAge =
+    show_age && ageLabel
+      ? iconWithLabel(icons.commits, ageLabel, "age", ICON_SIZE)
+      : "";
   const svgStars = iconWithLabel(
     icons.star,
     totalStars,
@@ -140,11 +197,14 @@ const renderRepoCard = (repo, options = {}) => {
   );
 
   const starAndForkCount = flexLayout({
-    items: [svgLanguage, svgStars, svgForks],
+    items: [svgLanguage, svgStars, svgForks, svgIssues, svgPRs, svgAge],
     sizes: [
       measureText(langName, 12),
       ICON_SIZE + measureText(`${totalStars}`, 12),
       ICON_SIZE + measureText(`${totalForks}`, 12),
+      totalIssues > 0 ? ICON_SIZE + measureText(`${totalIssues}`, 12) : 0,
+      totalPRs > 0 ? ICON_SIZE + measureText(`${totalPRs}`, 12) : 0,
+      ageLabel ? ICON_SIZE + measureText(`${ageLabel}`, 12) : 0,
     ],
     gap: 25,
   }).join("");
