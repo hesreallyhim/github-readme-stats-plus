@@ -16,6 +16,14 @@ import { isValidHexColor, isValidGradient } from "../src/common/utils.js";
 import { themes } from "../themes/index.js";
 import { getGithubToken, getRepoInfo } from "./helpers.js";
 
+// Base URL for generating preview links; prefers explicit BASE_URL,
+// falls back to Vercel-provided URL in preview, else fork production.
+const BASE_URL =
+  process.env.BASE_URL ||
+  (process.env.VERCEL_URL
+    ? `https://${process.env.VERCEL_URL}`
+    : "https://github-readme-stats-plus-theta.vercel.app");
+
 const COMMENTER = "github-actions[bot]";
 
 const COMMENT_TITLE = "Automated Theme Preview";
@@ -305,7 +313,7 @@ const getWebAimLink = (color1, color2) => {
  * @returns {string} GRS theme url.
  */
 const getGRSLink = (colors) => {
-  const url = `https://github-readme-stats.vercel.app/api?username=anuraghazra`;
+  const url = `${BASE_URL}/api?username=anuraghazra`;
   const colorString = Object.keys(colors)
     .map((colorKey) => `${colorKey}=${colors[colorKey]}`)
     .join("&");
