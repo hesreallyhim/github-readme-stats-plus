@@ -140,6 +140,11 @@ const renderRepoCard = (repo, options = {}) => {
     ? iconWithLabel(icons.prs, totalPRs, "prs", ICON_SIZE)
     : "";
 
+  /**
+   * Format an ISO date string into a compact relative age label.
+   * @param {string | null} iso ISO 8601 timestamp to format.
+   * @returns {string} Compact relative time (e.g., "2y", "3mo", "5d").
+   */
   const formatAge = (iso) => {
     if (!iso) {
       return "";
@@ -170,6 +175,7 @@ const renderRepoCard = (repo, options = {}) => {
     return `${sec}s`;
   };
 
+  /** @type {string | null} */
   let ageIso = null;
   if (age_metric === "created") {
     ageIso = repo.createdAt || null;
@@ -232,11 +238,9 @@ const renderRepoCard = (repo, options = {}) => {
   return card.render(`
     ${
       isTemplate
-        ? // @ts-ignore
-          getBadgeSVG(i18n.t("repocard.template"), colors.textColor)
+        ? getBadgeSVG(i18n.t("repocard.template"), colors.textColor)
         : isArchived
-          ? // @ts-ignore
-            getBadgeSVG(i18n.t("repocard.archived"), colors.textColor)
+          ? getBadgeSVG(i18n.t("repocard.archived"), colors.textColor)
           : ""
     }
 
