@@ -17,12 +17,16 @@ import { themes } from "../themes/index.js";
 import { getGithubToken, getRepoInfo } from "./helpers.js";
 
 // Base URL for generating preview links; prefers explicit BASE_URL,
-// falls back to Vercel-provided URL in preview, else fork production.
+// then stable branch URL, then commit URL, else fork production.
 const BASE_URL =
   process.env.BASE_URL ||
-  (process.env.VERCEL_URL
-    ? `https://${process.env.VERCEL_URL}`
-    : "https://github-readme-stats-plus-theta.vercel.app");
+  (process.env.VERCEL_BRANCH_URL
+    ? `https://${process.env.VERCEL_BRANCH_URL}`
+    : process.env.VERCEL_PREVIEW_URL
+      ? process.env.VERCEL_PREVIEW_URL
+      : process.env.VERCEL_URL
+        ? `https://${process.env.VERCEL_URL}`
+        : "https://github-readme-stats-plus-theta.vercel.app");
 
 const COMMENTER = "github-actions[bot]";
 
