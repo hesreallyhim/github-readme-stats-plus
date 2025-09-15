@@ -105,7 +105,7 @@ const renderRepoCard = (repo, options = {}) => {
     .map((line) => `<tspan dy="1.2em" x="25">${encodeHTML(line)}</tspan>`)
     .join("");
 
-  const height =
+  let height =
     (descriptionLinesCount > 1 ? 120 : 110) +
     descriptionLinesCount * lineHeight;
 
@@ -202,12 +202,29 @@ const renderRepoCard = (repo, options = {}) => {
     ICON_SIZE,
   );
 
+  // First row: language + stars + forks.
   const starAndForkCount = flexLayout({
-    items: [svgLanguage, svgStars, svgForks, svgIssues, svgPRs, svgAge],
+    items: [svgLanguage, svgStars, svgForks],
     sizes: [
       measureText(langName, 12),
       ICON_SIZE + measureText(`${totalStars}`, 12),
       ICON_SIZE + measureText(`${totalForks}`, 12),
+    ],
+    gap: 25,
+  }).join("");
+
+  // Optional second row: issues + PRs + age (if enabled/present).
+  const hasExtraRow = Boolean(
+    (show_issues && totalIssues > 0) ||
+      (show_prs && totalPRs > 0) ||
+      (show_age && ageLabel),
+  );
+  if (hasExtraRow) {
+    height += 20;
+  }
+  const extraMetrics = flexLayout({
+    items: [svgIssues, svgPRs, svgAge],
+    sizes: [
       totalIssues > 0 ? ICON_SIZE + measureText(`${totalIssues}`, 12) : 0,
       totalPRs > 0 ? ICON_SIZE + measureText(`${totalPRs}`, 12) : 0,
       ageLabel ? ICON_SIZE + measureText(`${ageLabel}`, 12) : 0,
@@ -248,9 +265,14 @@ const renderRepoCard = (repo, options = {}) => {
       ${descriptionSvg}
     </text>
 
-    <g transform="translate(30, ${height - 75})">
+    <g transform="translate(30, ${height - (hasExtraRow ? 95 : 75)})">
       ${starAndForkCount}
     </g>
+    ${
+      hasExtraRow
+        ? `<g transform="translate(30, ${height - 75})">${extraMetrics}</g>`
+        : ""
+    }
   `);
 };
 
