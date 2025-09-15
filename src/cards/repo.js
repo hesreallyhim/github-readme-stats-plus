@@ -130,8 +130,10 @@ const renderRepoCard = (repo, options = {}) => {
 
   const totalStars = kFormatter(starCount);
   const totalForks = kFormatter(forkCount);
-  const totalIssues = kFormatter(repo.openIssuesCount || 0);
-  const totalPRs = kFormatter(repo.openPrsCount || 0);
+  const issuesCount = repo.openIssuesCount || 0;
+  const prsCount = repo.openPrsCount || 0;
+  const totalIssues = kFormatter(issuesCount);
+  const totalPRs = kFormatter(prsCount);
 
   const svgIssues = show_issues
     ? iconWithLabel(icons.issues, totalIssues, "issues", ICON_SIZE)
@@ -215,8 +217,8 @@ const renderRepoCard = (repo, options = {}) => {
 
   // Optional second row: issues + PRs + age (if enabled/present).
   const hasExtraRow = Boolean(
-    (show_issues && totalIssues > 0) ||
-      (show_prs && totalPRs > 0) ||
+    (show_issues && issuesCount > 0) ||
+      (show_prs && prsCount > 0) ||
       (show_age && ageLabel),
   );
   if (hasExtraRow) {
@@ -225,8 +227,8 @@ const renderRepoCard = (repo, options = {}) => {
   const extraMetrics = flexLayout({
     items: [svgIssues, svgPRs, svgAge],
     sizes: [
-      totalIssues > 0 ? ICON_SIZE + measureText(`${totalIssues}`, 12) : 0,
-      totalPRs > 0 ? ICON_SIZE + measureText(`${totalPRs}`, 12) : 0,
+      issuesCount > 0 ? ICON_SIZE + measureText(`${totalIssues}`, 12) : 0,
+      prsCount > 0 ? ICON_SIZE + measureText(`${totalPRs}`, 12) : 0,
       ageLabel ? ICON_SIZE + measureText(`${ageLabel}`, 12) : 0,
     ],
     gap: 25,
