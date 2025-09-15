@@ -7,7 +7,19 @@ import { expect, it, describe, afterEach } from "@jest/globals";
 const data_repo = {
   repository: {
     name: "convoychat",
+    createdAt: "2020-01-01T00:00:00Z",
+    pushedAt: "2020-01-02T00:00:00Z",
     stargazers: { totalCount: 38000 },
+    issues: { totalCount: 12 },
+    pullRequests: { totalCount: 3 },
+    defaultBranchRef: {
+      name: "main",
+      target: {
+        history: {
+          nodes: [{ committedDate: "2019-12-01T00:00:00Z" }],
+        },
+      },
+    },
     description: "Help us take over the world! React + TS + GraphQL Chat App",
     primaryLanguage: {
       color: "#2b7489",
@@ -47,6 +59,13 @@ describe("Test fetchRepo", () => {
     expect(repo).toStrictEqual({
       ...data_repo.repository,
       starCount: data_repo.repository.stargazers.totalCount,
+      openIssuesCount: data_repo.repository.issues.totalCount,
+      openPrsCount: data_repo.repository.pullRequests.totalCount,
+      createdAt: data_repo.repository.createdAt,
+      pushedAt: data_repo.repository.pushedAt,
+      firstCommitDate:
+        data_repo.repository.defaultBranchRef.target.history.nodes[0]
+          .committedDate,
     });
   });
 
@@ -57,6 +76,13 @@ describe("Test fetchRepo", () => {
     expect(repo).toStrictEqual({
       ...data_repo.repository,
       starCount: data_repo.repository.stargazers.totalCount,
+      openIssuesCount: data_repo.repository.issues.totalCount,
+      openPrsCount: data_repo.repository.pullRequests.totalCount,
+      createdAt: data_repo.repository.createdAt,
+      pushedAt: data_repo.repository.pushedAt,
+      firstCommitDate:
+        data_repo.repository.defaultBranchRef.target.history.nodes[0]
+          .committedDate,
     });
   });
 

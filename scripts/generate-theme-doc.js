@@ -1,6 +1,27 @@
 import fs from "fs";
 import { themes } from "../themes/index.js";
 
+// Allow overriding the base URL for images/links when generating docs.
+// Defaults to the public upstream instance.
+const BASE_URL = (() => {
+  if (process.env.BASE_URL) {
+    return process.env.BASE_URL;
+  }
+  if (process.env.VERCEL_ENV === "production" && process.env.VERCEL_URL) {
+    return `https://${process.env.VERCEL_URL}`;
+  }
+  if (process.env.VERCEL_BRANCH_URL) {
+    return `https://${process.env.VERCEL_BRANCH_URL}`;
+  }
+  if (process.env.VERCEL_PREVIEW_URL) {
+    return process.env.VERCEL_PREVIEW_URL;
+  }
+  if (process.env.VERCEL_URL) {
+    return `https://${process.env.VERCEL_URL}`;
+  }
+  return "https://github-readme-stats-plus-theta.vercel.app";
+})();
+
 const TARGET_FILE = "./themes/README.md";
 const REPO_CARD_LINKS_FLAG = "<!-- REPO_CARD_LINKS -->";
 const STAT_CARD_LINKS_FLAG = "<!-- STATS_CARD_LINKS -->";
@@ -17,7 +38,7 @@ With inbuilt themes, you can customize the look of the card without doing any ma
 Use \`?theme=THEME_NAME\` parameter like so:
 
 \`\`\`md
-![Anurag's GitHub stats](https://github-readme-stats.vercel.app/api?username=anuraghazra&theme=dark&show_icons=true)
+![Anurag's GitHub stats](${BASE_URL}/api?username=anuraghazra&theme=dark&show_icons=true)
 \`\`\`
 
 ## Stats
@@ -42,10 +63,10 @@ ${REPO_CARD_LINKS_FLAG}
 `;
 
 const createRepoMdLink = (theme) => {
-  return `\n[${theme}_repo]: https://github-readme-stats.vercel.app/api/pin/?username=anuraghazra&repo=github-readme-stats&cache_seconds=86400&theme=${theme}`;
+  return `\n[${theme}_repo]: ${BASE_URL}/api/pin/?username=anuraghazra&repo=github-readme-stats&cache_seconds=86400&theme=${theme}`;
 };
 const createStatMdLink = (theme) => {
-  return `\n[${theme}]: https://github-readme-stats.vercel.app/api?username=anuraghazra&show_icons=true&hide=contribs,prs&cache_seconds=86400&theme=${theme}`;
+  return `\n[${theme}]: ${BASE_URL}/api?username=anuraghazra&show_icons=true&hide=contribs,prs&cache_seconds=86400&theme=${theme}`;
 };
 
 const generateLinks = (fn) => {

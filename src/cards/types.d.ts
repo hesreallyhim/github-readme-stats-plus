@@ -33,6 +33,10 @@ export type StatCardOptions = CommonOptions & {
 export type RepoCardOptions = CommonOptions & {
   show_owner: boolean;
   description_lines_count: number;
+  show_issues?: boolean;
+  show_prs?: boolean;
+  show_age?: boolean;
+  age_metric?: "created" | "pushed" | "first";
 };
 
 export type TopLangOptions = CommonOptions & {

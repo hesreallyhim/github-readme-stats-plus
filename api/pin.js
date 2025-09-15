@@ -25,6 +25,10 @@ export default async (req, res) => {
     border_radius,
     border_color,
     description_lines_count,
+    show_issues,
+    show_prs,
+    show_age,
+    age_metric,
   } = req.query;
 
   res.setHeader("Content-Type", "image/svg+xml");
@@ -83,6 +87,10 @@ export default async (req, res) => {
         show_owner: parseBoolean(show_owner),
         locale: locale ? locale.toLowerCase() : null,
         description_lines_count,
+        show_issues: parseBoolean(show_issues),
+        show_prs: parseBoolean(show_prs),
+        show_age: parseBoolean(show_age),
+        age_metric,
       }),
     );
   } catch (err) {

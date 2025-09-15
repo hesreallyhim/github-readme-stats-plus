@@ -77,6 +77,10 @@ const renderRepoCard = (repo, options = {}) => {
     border_color,
     locale,
     description_lines_count,
+    show_issues = false,
+    show_prs = false,
+    show_age = false,
+    age_metric = "pushed",
   } = options;
 
   const lineHeight = 10;
@@ -101,7 +105,7 @@ const renderRepoCard = (repo, options = {}) => {
     .map((line) => `<tspan dy="1.2em" x="25">${encodeHTML(line)}</tspan>`)
     .join("");
 
-  const height =
+  let height =
     (descriptionLinesCount > 1 ? 120 : 110) +
     descriptionLinesCount * lineHeight;
 
@@ -126,6 +130,67 @@ const renderRepoCard = (repo, options = {}) => {
 
   const totalStars = kFormatter(starCount);
   const totalForks = kFormatter(forkCount);
+  const issuesCount = repo.openIssuesCount || 0;
+  const prsCount = repo.openPrsCount || 0;
+  const totalIssues = kFormatter(issuesCount);
+  const totalPRs = kFormatter(prsCount);
+
+  const svgIssues = show_issues
+    ? iconWithLabel(icons.issues, totalIssues, "issues", ICON_SIZE)
+    : "";
+  const svgPRs = show_prs
+    ? iconWithLabel(icons.prs, totalPRs, "prs", ICON_SIZE)
+    : "";
+
+  /**
+   * Format an ISO date string into a compact relative age label.
+   * @param {string | null} iso ISO 8601 timestamp to format.
+   * @returns {string} Compact relative time (e.g., "2y", "3mo", "5d").
+   */
+  const formatAge = (iso) => {
+    if (!iso) {
+      return "";
+    }
+    const then = new Date(iso).getTime();
+    const now = Date.now();
+    const sec = Math.max(0, Math.floor((now - then) / 1000));
+    const y = Math.floor(sec / (365 * 24 * 3600));
+    if (y >= 1) {
+      return `${y}y`;
+    }
+    const mo = Math.floor(sec / (30 * 24 * 3600));
+    if (mo >= 1) {
+      return `${mo}mo`;
+    }
+    const d = Math.floor(sec / (24 * 3600));
+    if (d >= 1) {
+      return `${d}d`;
+    }
+    const h = Math.floor(sec / 3600);
+    if (h >= 1) {
+      return `${h}h`;
+    }
+    const m = Math.floor(sec / 60);
+    if (m >= 1) {
+      return `${m}m`;
+    }
+    return `${sec}s`;
+  };
+
+  /** @type {string | null} */
+  let ageIso = null;
+  if (age_metric === "created") {
+    ageIso = repo.createdAt || null;
+  } else if (age_metric === "first") {
+    ageIso = repo.firstCommitDate || null;
+  } else {
+    ageIso = repo.pushedAt || null;
+  }
+  const ageLabel = formatAge(ageIso);
+  const svgAge =
+    show_age && ageLabel
+      ? iconWithLabel(icons.commits, ageLabel, "age", ICON_SIZE)
+      : "";
   const svgStars = iconWithLabel(
     icons.star,
     totalStars,
@@ -139,12 +204,32 @@ const renderRepoCard = (repo, options = {}) => {
     ICON_SIZE,
   );
 
+  // First row: language + stars + forks.
   const starAndForkCount = flexLayout({
     items: [svgLanguage, svgStars, svgForks],
     sizes: [
       measureText(langName, 12),
       ICON_SIZE + measureText(`${totalStars}`, 12),
       ICON_SIZE + measureText(`${totalForks}`, 12),
+    ],
+    gap: 25,
+  }).join("");
+
+  // Optional second row: issues + PRs + age (if enabled/present).
+  const hasExtraRow = Boolean(
+    (show_issues && issuesCount > 0) ||
+      (show_prs && prsCount > 0) ||
+      (show_age && ageLabel),
+  );
+  if (hasExtraRow) {
+    height += 20;
+  }
+  const extraMetrics = flexLayout({
+    items: [svgIssues, svgPRs, svgAge],
+    sizes: [
+      issuesCount > 0 ? ICON_SIZE + measureText(`${totalIssues}`, 12) : 0,
+      prsCount > 0 ? ICON_SIZE + measureText(`${totalPRs}`, 12) : 0,
+      ageLabel ? ICON_SIZE + measureText(`${ageLabel}`, 12) : 0,
     ],
     gap: 25,
   }).join("");
@@ -172,11 +257,9 @@ const renderRepoCard = (repo, options = {}) => {
   return card.render(`
     ${
       isTemplate
-        ? // @ts-ignore
-          getBadgeSVG(i18n.t("repocard.template"), colors.textColor)
+        ? getBadgeSVG(i18n.t("repocard.template"), colors.textColor)
         : isArchived
-          ? // @ts-ignore
-            getBadgeSVG(i18n.t("repocard.archived"), colors.textColor)
+          ? getBadgeSVG(i18n.t("repocard.archived"), colors.textColor)
           : ""
     }
 
@@ -184,9 +267,14 @@ const renderRepoCard = (repo, options = {}) => {
       ${descriptionSvg}
     </text>
 
-    <g transform="translate(30, ${height - 75})">
+    <g transform="translate(30, ${height - (hasExtraRow ? 95 : 75)})">
       ${starAndForkCount}
     </g>
+    ${
+      hasExtraRow
+        ? `<g transform="translate(30, ${height - 75})">${extraMetrics}</g>`
+        : ""
+    }
   `);
 };
 

@@ -16,6 +16,32 @@ import { isValidHexColor, isValidGradient } from "../src/common/utils.js";
 import { themes } from "../themes/index.js";
 import { getGithubToken, getRepoInfo } from "./helpers.js";
 
+// Base URL for generating preview links. Resolution order:
+// 1) BASE_URL (explicit override)
+// 2) VERCEL_ENV=production with VERCEL_URL (production domain)
+// 3) VERCEL_BRANCH_URL (stable branch URL)
+// 4) VERCEL_PREVIEW_URL (from GH deployment events)
+// 5) VERCEL_URL (commit URL)
+// 6) Fallback to fork production domain
+const BASE_URL = (() => {
+  if (process.env.BASE_URL) {
+    return process.env.BASE_URL;
+  }
+  if (process.env.VERCEL_ENV === "production" && process.env.VERCEL_URL) {
+    return `https://${process.env.VERCEL_URL}`;
+  }
+  if (process.env.VERCEL_BRANCH_URL) {
+    return `https://${process.env.VERCEL_BRANCH_URL}`;
+  }
+  if (process.env.VERCEL_PREVIEW_URL) {
+    return process.env.VERCEL_PREVIEW_URL;
+  }
+  if (process.env.VERCEL_URL) {
+    return `https://${process.env.VERCEL_URL}`;
+  }
+  return "https://github-readme-stats-plus-theta.vercel.app";
+})();
+
 const COMMENTER = "github-actions[bot]";
 
 const COMMENT_TITLE = "Automated Theme Preview";
@@ -305,7 +331,7 @@ const getWebAimLink = (color1, color2) => {
  * @returns {string} GRS theme url.
  */
 const getGRSLink = (colors) => {
-  const url = `https://github-readme-stats.vercel.app/api?username=anuraghazra`;
+  const url = `${BASE_URL}/api?username=anuraghazra`;
   const colorString = Object.keys(colors)
     .map((colorKey) => `${colorKey}=${colors[colorKey]}`)
     .join("&");

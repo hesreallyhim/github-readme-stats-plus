@@ -24,8 +24,28 @@ const fetcher = (variables, token) => {
         isPrivate
         isArchived
         isTemplate
+        createdAt
+        pushedAt
         stargazers {
           totalCount
+        }
+        issues(states: OPEN) {
+          totalCount
+        }
+        pullRequests(states: OPEN) {
+          totalCount
+        }
+        defaultBranchRef {
+          name
+          target {
+            ... on Commit {
+              history(first: 1, orderBy: { field: AUTHOR_DATE, direction: ASC }) {
+                nodes {
+                  committedDate
+                }
+              }
+            }
+          }
         }
         description
         primaryLanguage {
@@ -95,9 +115,19 @@ const fetchRepo = async (username, reponame) => {
     if (!data.user.repository || data.user.repository.isPrivate) {
       throw new Error("User Repository Not found");
     }
+    const repo = data.user.repository;
     return {
-      ...data.user.repository,
-      starCount: data.user.repository.stargazers.totalCount,
+      ...repo,
+      starCount: repo.stargazers.totalCount,
+      ...(repo.issues ? { openIssuesCount: repo.issues.totalCount } : {}),
+      ...(repo.pullRequests
+        ? { openPrsCount: repo.pullRequests.totalCount }
+        : {}),
+      ...(repo.createdAt ? { createdAt: repo.createdAt } : {}),
+      ...(repo.pushedAt ? { pushedAt: repo.pushedAt } : {}),
+      firstCommitDate:
+        repo?.defaultBranchRef?.target?.history?.nodes?.[0]?.committedDate ??
+        null,
     };
   }
 
@@ -108,9 +138,19 @@ const fetchRepo = async (username, reponame) => {
     ) {
       throw new Error("Organization Repository Not found");
     }
+    const repo = data.organization.repository;
     return {
-      ...data.organization.repository,
-      starCount: data.organization.repository.stargazers.totalCount,
+      ...repo,
+      starCount: repo.stargazers.totalCount,
+      ...(repo.issues ? { openIssuesCount: repo.issues.totalCount } : {}),
+      ...(repo.pullRequests
+        ? { openPrsCount: repo.pullRequests.totalCount }
+        : {}),
+      ...(repo.createdAt ? { createdAt: repo.createdAt } : {}),
+      ...(repo.pushedAt ? { pushedAt: repo.pushedAt } : {}),
+      firstCommitDate:
+        repo?.defaultBranchRef?.target?.history?.nodes?.[0]?.committedDate ??
+        null,
     };
   }
 

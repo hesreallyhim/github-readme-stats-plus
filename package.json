@@ -1,5 +1,5 @@
 {
-  "name": "github-readme-stats",
+  "name": "github-readme-stats-plus",
   "version": "1.0.0",
   "description": "Dynamically generate stats for your GitHub readme",
   "keywords": [
@@ -10,13 +10,13 @@
   ],
   "main": "src/index.js",
   "type": "module",
-  "homepage": "https://github.com/anuraghazra/github-readme-stats",
+  "homepage": "https://github.com/hesreallyhim/github-readme-stats-plus",
   "bugs": {
-    "url": "https://github.com/anuraghazra/github-readme-stats/issues"
+    "url": "https://github.com/hesreallyhim/github-readme-stats-plus/issues"
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/anuraghazra/github-readme-stats.git"
+    "url": "https://github.com/hesreallyhim/github-readme-stats-plus.git"
   },
   "scripts": {
     "test": "node --experimental-vm-modules node_modules/jest/bin/jest.js --coverage",
