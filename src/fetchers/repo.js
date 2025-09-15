@@ -26,33 +26,16 @@ const fetcher = (variables, token) => {
         isTemplate
         createdAt
         pushedAt
-        stargazers {
-          totalCount
-        }
-        issues(states: OPEN) {
-          totalCount
-        }
-        pullRequests(states: OPEN) {
-          totalCount
-        }
+        stargazers { totalCount }
+        issues(states: OPEN) { totalCount }
+        pullRequests(states: OPEN) { totalCount }
         description
-        primaryLanguage {
-          color
-          id
-          name
-        }
+        primaryLanguage { color id name }
         forkCount
       }
-      query getRepo($login: String!, $repo: String!) {
-        user(login: $login) {
-          repository(name: $repo) {
-            ...RepoInfo
-          }
-        }
-        organization(login: $login) {
-          repository(name: $repo) {
-            ...RepoInfo
-          }
+      query getRepo($owner: String!, $repo: String!) {
+        repository(owner: $owner, name: $repo) {
+          ...RepoInfo
         }
       }
     `,
@@ -88,81 +71,35 @@ const fetchRepo = async (username, reponame) => {
     throw new MissingParamError(["repo"], urlExample);
   }
 
-  let res = await retryer(fetcher, { login: username, repo: reponame });
+  let res = await retryer(fetcher, { owner: username, repo: reponame });
 
   const data = res && res.data ? res.data.data : null;
-  const userNode = data?.user ?? null;
-  const orgNode = data?.organization ?? null;
+  const errors = (res && res.data && res.data.errors) || [];
 
-  // GitHub may return an error for the organization field when the login is a user.
-  // If at least one of user/organization is present, ignore org NOT_FOUND errors.
-  const rawErrors = (res && res.data && res.data.errors) || [];
-  const filteredErrors = rawErrors.filter((e) => {
-    const msg = (e?.message || "").toLowerCase();
-    const path = Array.isArray(e?.path) ? e.path.join(".") : "";
-    const isOrgNotFound =
-      msg.includes("could not resolve to an organization") ||
-      path.startsWith("organization");
-    if ((userNode || orgNode) && isOrgNotFound) {
-      return false;
-    }
-    return true;
-  });
-  if (filteredErrors.length) {
-    throw new Error(filteredErrors[0].message || "GitHub GraphQL error");
+  if (errors.length) {
+    throw new Error(errors[0].message || "GitHub GraphQL error");
   }
 
   if (!data) {
     throw new Error("Invalid response from GitHub API");
   }
 
-  if (!data.user && !data.organization) {
-    throw new Error("Not found");
+  const repo = data.repository;
+  if (!repo || repo.isPrivate) {
+    throw new Error("Repository Not found");
   }
 
-  const isUser = data.organization === null && data.user;
-  const isOrg = data.user === null && data.organization;
-
-  if (isUser) {
-    if (!data.user.repository || data.user.repository.isPrivate) {
-      throw new Error("User Repository Not found");
-    }
-    const repo = data.user.repository;
-    return {
-      ...repo,
-      starCount: repo.stargazers.totalCount,
-      ...(repo.issues ? { openIssuesCount: repo.issues.totalCount } : {}),
-      ...(repo.pullRequests
-        ? { openPrsCount: repo.pullRequests.totalCount }
-        : {}),
-      ...(repo.createdAt ? { createdAt: repo.createdAt } : {}),
-      ...(repo.pushedAt ? { pushedAt: repo.pushedAt } : {}),
-      firstCommitDate: repo.createdAt || null,
-    };
-  }
-
-  if (isOrg) {
-    if (
-      !data.organization.repository ||
-      data.organization.repository.isPrivate
-    ) {
-      throw new Error("Organization Repository Not found");
-    }
-    const repo = data.organization.repository;
-    return {
-      ...repo,
-      starCount: repo.stargazers.totalCount,
-      ...(repo.issues ? { openIssuesCount: repo.issues.totalCount } : {}),
-      ...(repo.pullRequests
-        ? { openPrsCount: repo.pullRequests.totalCount }
-        : {}),
-      ...(repo.createdAt ? { createdAt: repo.createdAt } : {}),
-      ...(repo.pushedAt ? { pushedAt: repo.pushedAt } : {}),
-      firstCommitDate: repo.createdAt || null,
-    };
-  }
-
-  throw new Error("Unexpected behavior");
+  return {
+    ...repo,
+    starCount: repo.stargazers.totalCount,
+    ...(repo.issues ? { openIssuesCount: repo.issues.totalCount } : {}),
+    ...(repo.pullRequests
+      ? { openPrsCount: repo.pullRequests.totalCount }
+      : {}),
+    ...(repo.createdAt ? { createdAt: repo.createdAt } : {}),
+    ...(repo.pushedAt ? { pushedAt: repo.pushedAt } : {}),
+    firstCommitDate: repo.createdAt || null,
+  };
 };
 
 export { fetchRepo };
