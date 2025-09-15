@@ -134,20 +134,32 @@ const isValidHexColor = (hexColor) => {
 };
 
 /**
- * Returns boolean if value is either "true" or "false" else the value as it is.
+ * Parses a boolean-like value from query params.
+ * Accepts booleans, "true"/"false" (any case), and "1"/"0".
+ * Returns undefined for unrecognized values so callers can apply defaults.
  *
- * @param {string | boolean} value The value to parse.
+ * @param {string | boolean | number | undefined} value The value to parse.
  * @returns {boolean | undefined } The parsed value.
  */
 const parseBoolean = (value) => {
   if (typeof value === "boolean") {
     return value;
   }
-
-  if (typeof value === "string") {
-    if (value.toLowerCase() === "true") {
+  if (typeof value === "number") {
+    if (value === 1) {
       return true;
-    } else if (value.toLowerCase() === "false") {
+    }
+    if (value === 0) {
+      return false;
+    }
+    return undefined;
+  }
+  if (typeof value === "string") {
+    const v = value.toLowerCase().trim();
+    if (v === "true" || v === "1") {
+      return true;
+    }
+    if (v === "false" || v === "0") {
       return false;
     }
   }
