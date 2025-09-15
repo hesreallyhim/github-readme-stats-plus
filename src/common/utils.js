@@ -41,7 +41,7 @@ class CustomError extends Error {
 
 /**
  * Auto layout utility, allows us to layout things vertically or horizontally with
- * proper gapping.
+ * proper spacing.
  *
  * @param {object} props Function properties.
  * @param {string[]} props.items Array of items to layout.
