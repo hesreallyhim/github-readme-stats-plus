@@ -42,7 +42,7 @@ query gistInfo($gistName: String!) {
 const fetcher = async (variables, token) => {
   return await request(
     { query: QUERY, variables },
-    { Authorization: `token ${token}` },
+    { Authorization: `bearer ${token}` },
   );
 };
 

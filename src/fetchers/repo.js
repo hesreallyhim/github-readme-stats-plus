@@ -35,18 +35,6 @@ const fetcher = (variables, token) => {
         pullRequests(states: OPEN) {
           totalCount
         }
-        defaultBranchRef {
-          name
-          target {
-            ... on Commit {
-              history(first: 1, orderBy: { field: AUTHOR_DATE, direction: ASC }) {
-                nodes {
-                  committedDate
-                }
-              }
-            }
-          }
-        }
         description
         primaryLanguage {
           color
@@ -71,7 +59,7 @@ const fetcher = (variables, token) => {
       variables,
     },
     {
-      Authorization: `token ${token}`,
+      Authorization: `bearer ${token}`,
     },
   );
 };
@@ -102,7 +90,15 @@ const fetchRepo = async (username, reponame) => {
 
   let res = await retryer(fetcher, { login: username, repo: reponame });
 
-  const data = res.data.data;
+  const errors = res && res.data && res.data.errors ? res.data.errors : null;
+  if (errors && errors.length) {
+    throw new Error(errors[0].message || "GitHub GraphQL error");
+  }
+
+  const data = res && res.data ? res.data.data : null;
+  if (!data) {
+    throw new Error("Invalid response from GitHub API");
+  }
 
   if (!data.user && !data.organization) {
     throw new Error("Not found");
@@ -125,9 +121,7 @@ const fetchRepo = async (username, reponame) => {
         : {}),
       ...(repo.createdAt ? { createdAt: repo.createdAt } : {}),
       ...(repo.pushedAt ? { pushedAt: repo.pushedAt } : {}),
-      firstCommitDate:
-        repo?.defaultBranchRef?.target?.history?.nodes?.[0]?.committedDate ??
-        null,
+      firstCommitDate: repo.createdAt || null,
     };
   }
 
@@ -148,9 +142,7 @@ const fetchRepo = async (username, reponame) => {
         : {}),
       ...(repo.createdAt ? { createdAt: repo.createdAt } : {}),
       ...(repo.pushedAt ? { pushedAt: repo.pushedAt } : {}),
-      firstCommitDate:
-        repo?.defaultBranchRef?.target?.history?.nodes?.[0]?.committedDate ??
-        null,
+      firstCommitDate: repo.createdAt || null,
     };
   }
 

@@ -63,9 +63,7 @@ describe("Test fetchRepo", () => {
       openPrsCount: data_repo.repository.pullRequests.totalCount,
       createdAt: data_repo.repository.createdAt,
       pushedAt: data_repo.repository.pushedAt,
-      firstCommitDate:
-        data_repo.repository.defaultBranchRef.target.history.nodes[0]
-          .committedDate,
+      firstCommitDate: data_repo.repository.createdAt,
     });
   });
 
@@ -80,9 +78,7 @@ describe("Test fetchRepo", () => {
       openPrsCount: data_repo.repository.pullRequests.totalCount,
       createdAt: data_repo.repository.createdAt,
       pushedAt: data_repo.repository.pushedAt,
-      firstCommitDate:
-        data_repo.repository.defaultBranchRef.target.history.nodes[0]
-          .committedDate,
+      firstCommitDate: data_repo.repository.createdAt,
     });
   });
 
