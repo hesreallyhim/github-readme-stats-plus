@@ -686,7 +686,7 @@ Choose from any of the [default themes](#themes)
 
 *   Customizing repo card
 
-![Customized Card](https://github-readme-stats-plus-theta.vercel.app/api/pin?username=anuraghazra\&repo=github-readme-stats\&title_color=fff\&icon_color=f9f9f9\&text_color=9f9f9f\&bg_color=151515)
+![Customized Card](https://github-readme-stats-plus-theta.vercel.app/api/pin?username=anuraghazra\&repo=github-readme-stats\&title_color=fff\&icon_color=f9f9f9\&text_color=9f9f9f\&bg_color=151515\&show_issues=1\&show_prs=1\&show_age=1\&age_metric=first\&v=2)
 
 *   Gist card
 
@@ -737,10 +737,10 @@ By default, GitHub does not lay out the cards side by side. To do that, you can 
 
 ```html
 <a href="https://github.com/anuraghazra/github-readme-stats">
-  <img align="center" src="https://github-readme-stats-plus-theta.vercel.app/api/pin/?username=anuraghazra&repo=github-readme-stats" />
+  <img align="center" src="https://github-readme-stats-plus-theta.vercel.app/api/pin/?username=anuraghazra&repo=github-readme-stats&show_issues=1&show_prs=1&show_age=1&age_metric=first&v=2" />
 </a>
 <a href="https://github.com/anuraghazra/convoychat">
-  <img align="center" src="https://github-readme-stats-plus-theta.vercel.app/api/pin/?username=anuraghazra&repo=convoychat" />
+  <img align="center" src="https://github-readme-stats-plus-theta.vercel.app/api/pin/?username=anuraghazra&repo=convoychat&show_issues=1&show_prs=1&show_age=1&age_metric=first&v=2" />
 </a>
 ```
 
@@ -748,10 +748,10 @@ By default, GitHub does not lay out the cards side by side. To do that, you can 
 <summary>:eyes: Show example</summary>
 
 <a href="https://github.com/anuraghazra/github-readme-stats">
-  <img align="center" src="https://github-readme-stats-plus-theta.vercel.app/api/pin/?username=anuraghazra&repo=github-readme-stats" />
+  <img align="center" src="https://github-readme-stats-plus-theta.vercel.app/api/pin/?username=anuraghazra&repo=github-readme-stats&show_issues=1&show_prs=1&show_age=1&age_metric=first&v=2" />
 </a>
 <a href="https://github.com/anuraghazra/convoychat">
-  <img align="center" src="https://github-readme-stats-plus-theta.vercel.app/api/pin/?username=anuraghazra&repo=convoychat" />
+  <img align="center" src="https://github-readme-stats-plus-theta.vercel.app/api/pin/?username=anuraghazra&repo=convoychat&show_issues=1&show_prs=1&show_age=1&age_metric=first&v=2" />
 </a>
 
 </details>
