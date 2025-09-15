@@ -32,8 +32,8 @@ describe("Test utils.js", () => {
     expect(parseBoolean("TRUE")).toBe(true);
     expect(parseBoolean("FALSE")).toBe(false);
 
-    expect(parseBoolean("1")).toBe(undefined);
-    expect(parseBoolean("0")).toBe(undefined);
+    expect(parseBoolean("1")).toBe(true);
+    expect(parseBoolean("0")).toBe(false);
     expect(parseBoolean("")).toBe(undefined);
     expect(parseBoolean(undefined)).toBe(undefined);
   });
