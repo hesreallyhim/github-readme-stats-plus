@@ -6,6 +6,7 @@ on:
   #     - master
   #   paths:
   #     - "themes/index.js"
+  deployment_status:
   workflow_dispatch:
 
 permissions:
@@ -46,3 +47,5 @@ jobs:
       - run: npm run preview-theme
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          # Prefer a stable branch URL if provided by Vercel; otherwise use the target commit URL.
+          BASE_URL: ${{ github.event.deployment_status.target_url }}
