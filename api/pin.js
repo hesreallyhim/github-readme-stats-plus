@@ -61,9 +61,9 @@ export default async (req, res) => {
     const repoData = await fetchRepo(username, repo);
 
     let cacheSeconds = clampValue(
-      parseInt(cache_seconds || CONSTANTS.PIN_CARD_CACHE_SECONDS, 10),
-      CONSTANTS.ONE_DAY,
-      CONSTANTS.TEN_DAY,
+      parseInt(cache_seconds || CONSTANTS.TWELVE_HOURS, 10),
+      CONSTANTS.FIVE_MINUTES,
+      CONSTANTS.TWELVE_HOURS,
     );
     cacheSeconds = process.env.CACHE_SECONDS
       ? parseInt(process.env.CACHE_SECONDS, 10) || cacheSeconds
@@ -90,7 +90,7 @@ export default async (req, res) => {
         show_issues: parseBoolean(show_issues),
         show_prs: parseBoolean(show_prs),
         show_age: parseBoolean(show_age),
-        age_metric,
+        age_metric: age_metric || "first",
       }),
     );
   } catch (err) {

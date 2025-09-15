@@ -80,7 +80,7 @@ const renderRepoCard = (repo, options = {}) => {
     show_issues = false,
     show_prs = false,
     show_age = false,
-    age_metric = "pushed",
+    age_metric = "first",
   } = options;
 
   const lineHeight = 10;
@@ -204,34 +204,33 @@ const renderRepoCard = (repo, options = {}) => {
     ICON_SIZE,
   );
 
-  // First row: language + stars + forks.
-  const starAndForkCount = flexLayout({
-    items: [svgLanguage, svgStars, svgForks],
-    sizes: [
-      measureText(langName, 12),
-      ICON_SIZE + measureText(`${totalStars}`, 12),
-      ICON_SIZE + measureText(`${totalForks}`, 12),
-    ],
-    gap: 25,
-  }).join("");
-
-  // Optional second row: issues + PRs + age (if enabled/present).
-  const hasExtraRow = Boolean(
-    (show_issues && issuesCount > 0) ||
-      (show_prs && prsCount > 0) ||
-      (show_age && ageLabel),
-  );
-  if (hasExtraRow) {
-    height += 20;
+  // Single-row layout: language + stars + forks + optional issues/PRs/age.
+  const rowItems = [];
+  const rowSizes = [];
+  if (svgLanguage) {
+    rowItems.push(svgLanguage);
+    rowSizes.push(measureText(langName, 12));
   }
-  const extraMetrics = flexLayout({
-    items: [svgIssues, svgPRs, svgAge],
-    sizes: [
-      issuesCount > 0 ? ICON_SIZE + measureText(`${totalIssues}`, 12) : 0,
-      prsCount > 0 ? ICON_SIZE + measureText(`${totalPRs}`, 12) : 0,
-      ageLabel ? ICON_SIZE + measureText(`${ageLabel}`, 12) : 0,
-    ],
-    gap: 25,
+  rowItems.push(svgStars);
+  rowSizes.push(ICON_SIZE + measureText(`${totalStars}`, 12));
+  rowItems.push(svgForks);
+  rowSizes.push(ICON_SIZE + measureText(`${totalForks}`, 12));
+  if (show_issues && issuesCount > 0) {
+    rowItems.push(svgIssues);
+    rowSizes.push(ICON_SIZE + measureText(`${totalIssues}`, 12));
+  }
+  if (show_prs && prsCount > 0) {
+    rowItems.push(svgPRs);
+    rowSizes.push(ICON_SIZE + measureText(`${totalPRs}`, 12));
+  }
+  if (show_age && ageLabel) {
+    rowItems.push(svgAge);
+    rowSizes.push(ICON_SIZE + measureText(`${ageLabel}`, 12));
+  }
+  const starAndForkCount = flexLayout({
+    items: rowItems,
+    sizes: rowSizes,
+    gap: 16,
   }).join("");
 
   const card = new Card({
@@ -267,14 +266,9 @@ const renderRepoCard = (repo, options = {}) => {
       ${descriptionSvg}
     </text>
 
-    <g transform="translate(30, ${height - (hasExtraRow ? 95 : 75)})">
+    <g transform="translate(30, ${height - 75})">
       ${starAndForkCount}
     </g>
-    ${
-      hasExtraRow
-        ? `<g transform="translate(30, ${height - 75})">${extraMetrics}</g>`
-        : ""
-    }
   `);
 };
 

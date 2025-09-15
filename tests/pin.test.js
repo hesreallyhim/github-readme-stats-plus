@@ -220,9 +220,7 @@ describe("Test /api/pin", () => {
     expect(res.setHeader).toBeCalledWith("Content-Type", "image/svg+xml");
     expect(res.setHeader).toBeCalledWith(
       "Cache-Control",
-      `max-age=${CONSTANTS.PIN_CARD_CACHE_SECONDS}, s-maxage=${
-        CONSTANTS.PIN_CARD_CACHE_SECONDS
-      }`,
+      `max-age=${CONSTANTS.TWELVE_HOURS}, s-maxage=${CONSTANTS.TWELVE_HOURS}`,
     );
   });
 });
