@@ -90,12 +90,28 @@ const fetchRepo = async (username, reponame) => {
 
   let res = await retryer(fetcher, { login: username, repo: reponame });
 
-  const errors = res && res.data && res.data.errors ? res.data.errors : null;
-  if (errors && errors.length) {
-    throw new Error(errors[0].message || "GitHub GraphQL error");
+  const data = res && res.data ? res.data.data : null;
+  const userNode = data?.user ?? null;
+  const orgNode = data?.organization ?? null;
+
+  // GitHub may return an error for the organization field when the login is a user.
+  // If at least one of user/organization is present, ignore org NOT_FOUND errors.
+  const rawErrors = (res && res.data && res.data.errors) || [];
+  const filteredErrors = rawErrors.filter((e) => {
+    const msg = (e?.message || "").toLowerCase();
+    const path = Array.isArray(e?.path) ? e.path.join(".") : "";
+    const isOrgNotFound =
+      msg.includes("could not resolve to an organization") ||
+      path.startsWith("organization");
+    if ((userNode || orgNode) && isOrgNotFound) {
+      return false;
+    }
+    return true;
+  });
+  if (filteredErrors.length) {
+    throw new Error(filteredErrors[0].message || "GitHub GraphQL error");
   }
 
-  const data = res && res.data ? res.data.data : null;
   if (!data) {
     throw new Error("Invalid response from GitHub API");
   }
