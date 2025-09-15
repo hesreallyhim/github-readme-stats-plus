@@ -3,15 +3,24 @@ import { themes } from "../themes/index.js";
 
 // Allow overriding the base URL for images/links when generating docs.
 // Defaults to the public upstream instance.
-const BASE_URL =
-  process.env.BASE_URL ||
-  (process.env.VERCEL_BRANCH_URL
-    ? `https://${process.env.VERCEL_BRANCH_URL}`
-    : process.env.VERCEL_PREVIEW_URL
-      ? process.env.VERCEL_PREVIEW_URL
-      : process.env.VERCEL_URL
-        ? `https://${process.env.VERCEL_URL}`
-        : "https://github-readme-stats-plus-theta.vercel.app");
+const BASE_URL = (() => {
+  if (process.env.BASE_URL) {
+    return process.env.BASE_URL;
+  }
+  if (process.env.VERCEL_ENV === "production" && process.env.VERCEL_URL) {
+    return `https://${process.env.VERCEL_URL}`;
+  }
+  if (process.env.VERCEL_BRANCH_URL) {
+    return `https://${process.env.VERCEL_BRANCH_URL}`;
+  }
+  if (process.env.VERCEL_PREVIEW_URL) {
+    return process.env.VERCEL_PREVIEW_URL;
+  }
+  if (process.env.VERCEL_URL) {
+    return `https://${process.env.VERCEL_URL}`;
+  }
+  return "https://github-readme-stats-plus-theta.vercel.app";
+})();
 
 const TARGET_FILE = "./themes/README.md";
 const REPO_CARD_LINKS_FLAG = "<!-- REPO_CARD_LINKS -->";
