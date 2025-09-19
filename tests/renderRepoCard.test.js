@@ -398,7 +398,7 @@ describe("Test renderRepoCard", () => {
 
     expect(document.getElementsByClassName("header").length).toBe(0);
     expect(document.getElementsByClassName("description").length).toBe(0);
-    expect(document.querySelector("svg")).toHaveAttribute("height", "80");
+    expect(document.querySelector("svg")).toHaveAttribute("height", "48");
     expect(queryByTestId(document.body, "stargazers")).toHaveTextContent("38k");
   });
 });

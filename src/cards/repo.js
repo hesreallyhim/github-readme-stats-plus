@@ -120,6 +120,13 @@ const renderRepoCard = (repo, options = {}) => {
     (hasDescription && descriptionLinesCount > 1 ? 120 : 110) +
     descriptionHeight;
 
+  const compactStatsOnlyLayout = hide_text && hide_title;
+  if (compactStatsOnlyLayout) {
+    const compactPadding = 12;
+    const compactRowHeight = ICON_SIZE + 8;
+    height = compactPadding * 2 + compactRowHeight;
+  }
+
   const i18n = new I18n({
     locale,
     translations: repoCardLocales,
@@ -244,11 +251,17 @@ const renderRepoCard = (repo, options = {}) => {
     gap: 16,
   }).join("");
 
+  const cardHeight = hide_title
+    ? compactStatsOnlyLayout
+      ? height + 30
+      : height
+    : height;
+
   const card = new Card({
     defaultTitle: header.length > 35 ? `${header.slice(0, 35)}...` : header,
     titlePrefixIcon: icons.contribs,
     width: 400,
-    height,
+    height: cardHeight,
     border_radius,
     colors,
   });
@@ -256,6 +269,9 @@ const renderRepoCard = (repo, options = {}) => {
   card.disableAnimations();
   card.setHideBorder(hide_border);
   card.setHideTitle(hide_title);
+  if (compactStatsOnlyLayout) {
+    card.paddingX = 12;
+  }
   card.setCSS(`
     .description { font: 400 13px 'Segoe UI', Ubuntu, Sans-Serif; fill: ${colors.textColor} }
     .gray { font: 400 12px 'Segoe UI', Ubuntu, Sans-Serif; fill: ${colors.textColor} }
@@ -283,7 +299,9 @@ const renderRepoCard = (repo, options = {}) => {
         : ""
     }
 
-    <g transform="translate(30, ${hasDescription ? height - 75 : 0})">
+    <g transform="translate(${compactStatsOnlyLayout ? 20 : 30}, ${
+      hasDescription ? height - 75 : 0
+    })">
       ${starAndForkCount}
     </g>
   `);
