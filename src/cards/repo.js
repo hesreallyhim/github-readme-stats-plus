@@ -67,6 +67,8 @@ const renderRepoCard = (repo, options = {}) => {
   } = repo;
   const {
     hide_border = false,
+    hide_title = false,
+    hide_text = false,
     title_color,
     icon_color,
     text_color,
@@ -87,27 +89,36 @@ const renderRepoCard = (repo, options = {}) => {
   const header = show_owner ? nameWithOwner : name;
   const langName = (primaryLanguage && primaryLanguage.name) || "Unspecified";
   const langColor = (primaryLanguage && primaryLanguage.color) || "#333";
-  const descriptionMaxLines = description_lines_count
-    ? clampValue(description_lines_count, 1, DESCRIPTION_MAX_LINES)
-    : DESCRIPTION_MAX_LINES;
+  let descriptionLinesCount = 0;
+  let descriptionSvg = "";
+  if (!hide_text) {
+    const descriptionMaxLines = description_lines_count
+      ? clampValue(description_lines_count, 1, DESCRIPTION_MAX_LINES)
+      : DESCRIPTION_MAX_LINES;
 
-  const desc = parseEmojis(description || "No description provided");
-  const multiLineDescription = wrapTextMultiline(
-    desc,
-    DESCRIPTION_LINE_WIDTH,
-    descriptionMaxLines,
-  );
-  const descriptionLinesCount = description_lines_count
-    ? clampValue(description_lines_count, 1, DESCRIPTION_MAX_LINES)
-    : multiLineDescription.length;
+    const descText = parseEmojis(description || "No description provided");
+    const multiLineDescription = wrapTextMultiline(
+      descText,
+      DESCRIPTION_LINE_WIDTH,
+      descriptionMaxLines,
+    );
 
-  const descriptionSvg = multiLineDescription
-    .map((line) => `<tspan dy="1.2em" x="25">${encodeHTML(line)}</tspan>`)
-    .join("");
+    descriptionLinesCount = description_lines_count
+      ? descriptionMaxLines
+      : multiLineDescription.length;
 
+    descriptionSvg = multiLineDescription
+      .map((line) => `<tspan dy="1.2em" x="25">${encodeHTML(line)}</tspan>`)
+      .join("");
+  }
+
+  const hasDescription = !hide_text && descriptionLinesCount > 0;
+  const descriptionHeight = hasDescription
+    ? descriptionLinesCount * lineHeight
+    : 0;
   let height =
-    (descriptionLinesCount > 1 ? 120 : 110) +
-    descriptionLinesCount * lineHeight;
+    (hasDescription && descriptionLinesCount > 1 ? 120 : 110) +
+    descriptionHeight;
 
   const i18n = new I18n({
     locale,
@@ -244,7 +255,7 @@ const renderRepoCard = (repo, options = {}) => {
 
   card.disableAnimations();
   card.setHideBorder(hide_border);
-  card.setHideTitle(false);
+  card.setHideTitle(hide_title);
   card.setCSS(`
     .description { font: 400 13px 'Segoe UI', Ubuntu, Sans-Serif; fill: ${colors.textColor} }
     .gray { font: 400 12px 'Segoe UI', Ubuntu, Sans-Serif; fill: ${colors.textColor} }
@@ -262,11 +273,17 @@ const renderRepoCard = (repo, options = {}) => {
           : ""
     }
 
+    ${
+      hasDescription
+        ? `
     <text class="description" x="25" y="-5">
       ${descriptionSvg}
     </text>
+    `
+        : ""
+    }
 
-    <g transform="translate(30, ${height - 75})">
+    <g transform="translate(30, ${hasDescription ? height - 75 : 0})">
       ${starAndForkCount}
     </g>
   `);

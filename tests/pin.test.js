@@ -72,6 +72,8 @@ describe("Test /api/pin", () => {
         text_color: "fff",
         bg_color: "fff",
         full_name: "1",
+        hide_title: "true",
+        hide_text: "true",
       },
     };
     const res = {

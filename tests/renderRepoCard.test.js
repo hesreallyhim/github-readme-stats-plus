@@ -369,4 +369,36 @@ describe("Test renderRepoCard", () => {
     );
     expect(document.querySelector("svg")).toHaveAttribute("height", "120");
   });
+
+  it("should hide the title when `hide_title` option is enabled", () => {
+    document.body.innerHTML = renderRepoCard(data_repo.repository, {
+      hide_title: true,
+    });
+
+    expect(document.getElementsByClassName("header").length).toBe(0);
+    expect(document.querySelector("svg")).toHaveAttribute("height", "90");
+    expect(queryByTestId(document.body, "stargazers")).toHaveTextContent("38k");
+  });
+
+  it("should hide the description when `hide_text` option is enabled", () => {
+    document.body.innerHTML = renderRepoCard(data_repo.repository, {
+      hide_text: true,
+    });
+
+    expect(document.getElementsByClassName("description").length).toBe(0);
+    expect(document.querySelector("svg")).toHaveAttribute("height", "110");
+    expect(queryByTestId(document.body, "stargazers")).toHaveTextContent("38k");
+  });
+
+  it("should hide both title and description when options are combined", () => {
+    document.body.innerHTML = renderRepoCard(data_repo.repository, {
+      hide_title: true,
+      hide_text: true,
+    });
+
+    expect(document.getElementsByClassName("header").length).toBe(0);
+    expect(document.getElementsByClassName("description").length).toBe(0);
+    expect(document.querySelector("svg")).toHaveAttribute("height", "80");
+    expect(queryByTestId(document.body, "stargazers")).toHaveTextContent("38k");
+  });
 });

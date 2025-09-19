@@ -15,6 +15,8 @@ export default async (req, res) => {
     username,
     repo,
     hide_border,
+    hide_title,
+    hide_text,
     title_color,
     icon_color,
     text_color,
@@ -100,6 +102,8 @@ export default async (req, res) => {
     return res.send(
       renderRepoCard(repoData, {
         hide_border: parseBoolean(hide_border),
+        hide_title: parseBoolean(hide_title),
+        hide_text: parseBoolean(hide_text),
         title_color,
         icon_color,
         text_color,

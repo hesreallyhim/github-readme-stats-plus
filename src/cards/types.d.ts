@@ -33,6 +33,8 @@ export type StatCardOptions = CommonOptions & {
 export type RepoCardOptions = CommonOptions & {
   show_owner: boolean;
   description_lines_count: number;
+  hide_title: boolean;
+  hide_text: boolean;
   show_issues?: boolean;
   show_prs?: boolean;
   show_age?: boolean;
