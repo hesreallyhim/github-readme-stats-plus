@@ -198,7 +198,7 @@ You can use the `bg_color` parameter to make any of [the available themes](theme
 <details>
 <summary>:eyes: Show example</summary>
 
-[![Anurag's GitHub stats](https://github-readme-stats-plus-theta.vercel.app/api?username=anuraghazra&show_icons=true&bg_color=00000000)](https://github.com/anuraghazra/github-readme-stats)
+![Anurag's GitHub stats](https://github-readme-stats-plus-theta.vercel.app/api?username=anuraghazra&show_icons=true&bg_color=00000000)
 
 </details>
 
