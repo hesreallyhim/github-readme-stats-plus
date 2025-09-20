@@ -270,7 +270,7 @@ const renderRepoCard = (repo, options = {}) => {
   card.setHideBorder(hide_border);
   card.setHideTitle(hide_title);
   if (compactStatsOnlyLayout) {
-    card.paddingX = 12;
+    card.paddingX = 25;
   }
   card.setCSS(`
     .description { font: 400 13px 'Segoe UI', Ubuntu, Sans-Serif; fill: ${colors.textColor} }
@@ -300,7 +300,7 @@ const renderRepoCard = (repo, options = {}) => {
     }
 
     <g transform="translate(${compactStatsOnlyLayout ? 20 : 30}, ${
-      hasDescription ? height - 75 : compactStatsOnlyLayout ? 5 : 0
+      hasDescription ? height - 75 : compactStatsOnlyLayout ? 2.5 : 0
     })">
       ${starAndForkCount}
     </g>
