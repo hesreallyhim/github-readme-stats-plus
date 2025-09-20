@@ -404,7 +404,7 @@ You can customize the appearance and behavior of the pinned repository card usin
 | `show_owner` | Shows the repo's owner name. | boolean | `false` |
 | `hide_title` | Hides the card title. | boolean | `false` |
 | `hide_text` | Hides the repository description row. | boolean | `false` |
-| `stats_only` | Shortcut for hiding both title and description; overrides `hide_title`/`hide_text`. | boolean | `false` |
+| `stats_only` | Shortcut for hiding both title and description; takes precedence over `hide_title`/`hide_text`. | boolean | `false` |
 | `description_lines_count` | Manually set the number of lines for the description. Specified value will be clamped between 1 and 3. If this parameter is not specified, the number of lines will be automatically adjusted according to the actual length of the description. | number | `null` |
 | `show_issues` | Shows the count of open issues. | boolean | `false` |
 | `show_prs` | Shows the count of open pull requests. | boolean | `false` |
@@ -426,6 +426,14 @@ Show open issues/PRs and repo age (by last push):
 Show repo age by first commit date instead of last push:
 
 ![Readme Card](https://github-readme-stats-plus-theta.vercel.app/api/pin/?username=anuraghazra\&repo=github-readme-stats\&show_age=true\&age_metric=first)
+
+Hide the description while keeping the title:
+
+![Readme Card](https://github-readme-stats-plus-theta.vercel.app/api/pin/?username=anuraghazra\&repo=github-readme-stats\&hide_text=true)
+
+Render just the stats row (title + description hidden) with `stats_only`:
+
+![Readme Card](https://github-readme-stats-plus-theta.vercel.app/api/pin/?username=anuraghazra\&repo=github-readme-stats\&stats_only=true)
 
 # GitHub Gist Pins
 
