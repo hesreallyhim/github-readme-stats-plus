@@ -17,6 +17,7 @@ export default async (req, res) => {
     hide_border,
     hide_title,
     hide_text,
+    stats_only,
     title_color,
     icon_color,
     text_color,
@@ -99,11 +100,15 @@ export default async (req, res) => {
       `max-age=${cacheSeconds}, s-maxage=${cacheSeconds}`,
     );
 
+    const parsedStatsOnly = parseBoolean(stats_only);
+    const statsOnly = parsedStatsOnly === true;
+
     return res.send(
       renderRepoCard(repoData, {
         hide_border: parseBoolean(hide_border),
-        hide_title: parseBoolean(hide_title),
-        hide_text: parseBoolean(hide_text),
+        hide_title: statsOnly ? true : parseBoolean(hide_title),
+        hide_text: statsOnly ? true : parseBoolean(hide_text),
+        stats_only: statsOnly,
         title_color,
         icon_color,
         text_color,

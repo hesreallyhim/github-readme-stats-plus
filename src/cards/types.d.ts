@@ -35,6 +35,7 @@ export type RepoCardOptions = CommonOptions & {
   description_lines_count: number;
   hide_title: boolean;
   hide_text: boolean;
+  stats_only?: boolean;
   show_issues?: boolean;
   show_prs?: boolean;
   show_age?: boolean;

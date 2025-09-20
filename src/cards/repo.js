@@ -69,6 +69,7 @@ const renderRepoCard = (repo, options = {}) => {
     hide_border = false,
     hide_title = false,
     hide_text = false,
+    stats_only = false,
     title_color,
     icon_color,
     text_color,
@@ -91,7 +92,10 @@ const renderRepoCard = (repo, options = {}) => {
   const langColor = (primaryLanguage && primaryLanguage.color) || "#333";
   let descriptionLinesCount = 0;
   let descriptionSvg = "";
-  if (!hide_text) {
+  const shouldHideTitle = stats_only || hide_title;
+  const shouldHideText = stats_only || hide_text;
+
+  if (!shouldHideText) {
     const descriptionMaxLines = description_lines_count
       ? clampValue(description_lines_count, 1, DESCRIPTION_MAX_LINES)
       : DESCRIPTION_MAX_LINES;
@@ -112,7 +116,7 @@ const renderRepoCard = (repo, options = {}) => {
       .join("");
   }
 
-  const hasDescription = !hide_text && descriptionLinesCount > 0;
+  const hasDescription = !shouldHideText && descriptionLinesCount > 0;
   const descriptionHeight = hasDescription
     ? descriptionLinesCount * lineHeight
     : 0;
@@ -120,7 +124,7 @@ const renderRepoCard = (repo, options = {}) => {
     (hasDescription && descriptionLinesCount > 1 ? 120 : 110) +
     descriptionHeight;
 
-  const compactStatsOnlyLayout = hide_text && hide_title;
+  const compactStatsOnlyLayout = shouldHideText && shouldHideTitle;
   if (compactStatsOnlyLayout) {
     const compactPadding = 12;
     const compactRowHeight = ICON_SIZE + 8;
@@ -251,7 +255,7 @@ const renderRepoCard = (repo, options = {}) => {
     gap: 16,
   }).join("");
 
-  const cardHeight = hide_title
+  const cardHeight = shouldHideTitle
     ? compactStatsOnlyLayout
       ? height + 30
       : height
@@ -268,7 +272,7 @@ const renderRepoCard = (repo, options = {}) => {
 
   card.disableAnimations();
   card.setHideBorder(hide_border);
-  card.setHideTitle(hide_title);
+  card.setHideTitle(shouldHideTitle);
   if (compactStatsOnlyLayout) {
     card.paddingX = 25;
   }

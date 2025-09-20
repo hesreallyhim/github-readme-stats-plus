@@ -401,4 +401,17 @@ describe("Test renderRepoCard", () => {
     expect(document.querySelector("svg")).toHaveAttribute("height", "48");
     expect(queryByTestId(document.body, "stargazers")).toHaveTextContent("38k");
   });
+
+  it("should treat `stats_only` as highest precedence", () => {
+    document.body.innerHTML = renderRepoCard(data_repo.repository, {
+      hide_title: false,
+      hide_text: false,
+      stats_only: true,
+    });
+
+    expect(document.getElementsByClassName("header").length).toBe(0);
+    expect(document.getElementsByClassName("description").length).toBe(0);
+    expect(document.querySelector("svg")).toHaveAttribute("height", "48");
+    expect(queryByTestId(document.body, "stargazers")).toHaveTextContent("38k");
+  });
 });

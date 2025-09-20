@@ -96,6 +96,40 @@ describe("Test /api/pin", () => {
     );
   });
 
+  it("should make stats_only take precedence over hide flags", async () => {
+    const req = {
+      query: {
+        username: "anuraghazra",
+        repo: "convoychat",
+        hide_title: "false",
+        hide_text: "false",
+        stats_only: "true",
+      },
+    };
+    const res = {
+      setHeader: jest.fn(),
+      send: jest.fn(),
+    };
+    mock.onPost("https://api.github.com/graphql").reply(200, data_repository);
+
+    await pin(req, res);
+
+    expect(res.setHeader).toBeCalledWith("Content-Type", "image/svg+xml");
+    expect(res.send).toBeCalledWith(
+      renderRepoCard(
+        {
+          ...data_repo.repository,
+          starCount: data_repo.repository.stargazers.totalCount,
+        },
+        {
+          hide_title: true,
+          hide_text: true,
+          stats_only: true,
+        },
+      ),
+    );
+  });
+
   it("should render error card if repo not found", async () => {
     const req = {
       query: {
