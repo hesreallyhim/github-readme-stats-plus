@@ -167,8 +167,8 @@ You can look at a preview for [all available themes](themes/README.md) or checko
 
 #### Responsive Card Theme
 
-[![Anurag's GitHub stats-Dark](https://github-readme-stats-plus-theta.vercel.app/api?username=anuraghazra\&show_icons=true\&theme=dark#gh-dark-mode-only)](https://github.com/anuraghazra/github-readme-stats#responsive-card-theme#gh-dark-mode-only)
-[![Anurag's GitHub stats-Light](https://github-readme-stats-plus-theta.vercel.app/api?username=anuraghazra\&show_icons=true\&theme=default#gh-light-mode-only)](https://github.com/anuraghazra/github-readme-stats#responsive-card-theme#gh-light-mode-only)
+[![Anurag's GitHub stats-Dark](https://github-readme-stats-plus-theta.vercel.app/api?username=anuraghazra&show_icons=true&theme=dark#gh-dark-mode-only)](https://github.com/anuraghazra/github-readme-stats#responsive-card-theme#gh-dark-mode-only)
+[![Anurag's GitHub stats-Light](https://github-readme-stats-plus-theta.vercel.app/api?username=anuraghazra&show_icons=true&theme=default#gh-light-mode-only)](https://github.com/anuraghazra/github-readme-stats#responsive-card-theme#gh-light-mode-only)
 
 Since GitHub will re-upload the cards and serve them from their [CDN](https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/about-anonymized-urls), we can not infer the browser/GitHub theme on the server side. There are, however, four methods you can use to create dynamics themes on the client side.
 
@@ -183,7 +183,7 @@ We have included a `transparent` theme that has a transparent background. This t
 <details>
 <summary>:eyes: Show example</summary>
 
-![Anurag's GitHub stats](https://github-readme-stats-plus-theta.vercel.app/api?username=anuraghazra\&show_icons=true\&theme=transparent)
+![Anurag's GitHub stats](https://github-readme-stats-plus-theta.vercel.app/api?username=anuraghazra&show_icons=true&theme=transparent)
 
 </details>
 
@@ -198,7 +198,7 @@ You can use the `bg_color` parameter to make any of [the available themes](theme
 <details>
 <summary>:eyes: Show example</summary>
 
-![Anurag's GitHub stats](https://github-readme-stats-plus-theta.vercel.app/api?username=anuraghazra\&show_icons=true\&bg_color=00000000)
+![Anurag's GitHub stats](https://github-readme-stats-plus-theta.vercel.app/api?username=anuraghazra&show_icons=true&bg_color=00000000)
 
 </details>
 
@@ -402,6 +402,10 @@ You can customize the appearance and behavior of the pinned repository card usin
 | Name | Description | Type | Default value |
 | --- | --- | --- | --- |
 | `show_owner` | Shows the repo's owner name. | boolean | `false` |
+| `hide_title` | Hides the card title. | boolean | `false` |
+| `hide_text` | Hides the repository description row. | boolean | `false` |
+| `stats_only` | Shortcut for hiding both title and description; takes precedence over `hide_title`/`hide_text`. | boolean | `false` |
+| `all_stats` | Shows open issues, pull requests, and age badges (overrides the individual `show_*` flags). | boolean | `false` |
 | `description_lines_count` | Manually set the number of lines for the description. Specified value will be clamped between 1 and 3. If this parameter is not specified, the number of lines will be automatically adjusted according to the actual length of the description. | number | `null` |
 | `show_issues` | Shows the count of open issues. | boolean | `false` |
 | `show_prs` | Shows the count of open pull requests. | boolean | `false` |
@@ -410,19 +414,31 @@ You can customize the appearance and behavior of the pinned repository card usin
 
 ### Demo
 
-![Readme Card](https://github-readme-stats-plus-theta.vercel.app/api/pin/?username=anuraghazra\&repo=github-readme-stats)
+![Readme Card](https://github-readme-stats-plus-theta.vercel.app/api/pin/?username=anuraghazra&repo=github-readme-stats&bust_cache_nonce=12345)
 
 Use `show_owner` query option to include the repo's owner username
 
-![Readme Card](https://github-readme-stats-plus-theta.vercel.app/api/pin/?username=anuraghazra\&repo=github-readme-stats\&show_owner=true)
+![Readme Card](https://github-readme-stats-plus-theta.vercel.app/api/pin/?username=anuraghazra\&repo=github-readme-stats\&show_owner=true&bust_cache_nonce=12345)
 
 Show open issues/PRs and repo age (by last push):
 
-![Readme Card](https://github-readme-stats-plus-theta.vercel.app/api/pin/?username=anuraghazra\&repo=github-readme-stats\&show_issues=true\&show_prs=true\&show_age=true)
+![Readme Card](https://github-readme-stats-plus-theta.vercel.app/api/pin/?username=anuraghazra\&repo=github-readme-stats\&show_issues=true\&show_prs=true\&show_age=true&bust_cache_nonce=12345)
 
 Show repo age by first commit date instead of last push:
 
-![Readme Card](https://github-readme-stats-plus-theta.vercel.app/api/pin/?username=anuraghazra\&repo=github-readme-stats\&show_age=true\&age_metric=first)
+![Readme Card](https://github-readme-stats-plus-theta.vercel.app/api/pin/?username=anuraghazra\&repo=github-readme-stats\&show_age=true\&age_metric=first&bust_cache_nonce=12345)
+
+Hide the description while keeping the title:
+
+![Readme Card](https://github-readme-stats-plus-theta.vercel.app/api/pin/?username=anuraghazra\&repo=github-readme-stats\&hide_text=true&bust_cache_nonce=12345)
+
+Render just the stats row (title + description hidden) with `stats_only`:
+
+![Readme Card](https://github-readme-stats-plus-theta.vercel.app/api/pin/?username=anuraghazra\&repo=github-readme-stats\&stats_only=true&bust_cache_nonce=12345)
+
+Enable issues, PRs, and age badges all at once with `all_stats`:
+
+![Readme Card](https://github-readme-stats-plus-theta.vercel.app/api/pin/?username=anuraghazra\&repo=github-readme-stats\&all_stats=true&bust_cache_nonce=12345)
 
 # GitHub Gist Pins
 
@@ -703,7 +719,7 @@ Choose from any of the [default themes](#themes)
 
 *   Customizing repo card
 
-![Customized Card](https://github-readme-stats-plus-theta.vercel.app/api/pin?username=anuraghazra\&repo=github-readme-stats\&title_color=fff\&icon_color=f9f9f9\&text_color=9f9f9f\&bg_color=151515\&show_issues=1\&show_prs=1\&show_age=1\&age_metric=first\&v=2)
+![Customized Card](https://github-readme-stats-plus-theta.vercel.app/api/pin?username=anuraghazra&repo=github-readme-stats&title_color=fff&icon_color=f9f9f9&text_color=9f9f9f&bg_color=151515&show_issues=1&show_prs=1&show_age=1&age_metric=first&cache_bust_nonce=12345)
 
 *   Gist card
 
@@ -754,10 +770,10 @@ By default, GitHub does not lay out the cards side by side. To do that, you can 
 
 ```html
 <a href="https://github.com/anuraghazra/github-readme-stats">
-  <img align="center" src="https://github-readme-stats-plus-theta.vercel.app/api/pin/?username=anuraghazra&repo=github-readme-stats&show_issues=1&show_prs=1&show_age=1&age_metric=first&v=2" />
+  <img align="center" src="https://github-readme-stats-plus-theta.vercel.app/api/pin/?username=anuraghazra&repo=github-readme-stats&show_issues=1&show_prs=1&show_age=1&age_metric=first" />
 </a>
 <a href="https://github.com/anuraghazra/convoychat">
-  <img align="center" src="https://github-readme-stats-plus-theta.vercel.app/api/pin/?username=anuraghazra&repo=convoychat&show_issues=1&show_prs=1&show_age=1&age_metric=first&v=2" />
+  <img align="center" src="https://github-readme-stats-plus-theta.vercel.app/api/pin/?username=anuraghazra&repo=convoychat&show_issues=1&show_prs=1&show_age=1&age_metric=first" />
 </a>
 ```
 
@@ -765,10 +781,10 @@ By default, GitHub does not lay out the cards side by side. To do that, you can 
 <summary>:eyes: Show example</summary>
 
 <a href="https://github.com/anuraghazra/github-readme-stats">
-  <img align="center" src="https://github-readme-stats-plus-theta.vercel.app/api/pin/?username=anuraghazra&repo=github-readme-stats&show_issues=1&show_prs=1&show_age=1&age_metric=first&v=2" />
+  <img align="center" src="https://github-readme-stats-plus-theta.vercel.app/api/pin/?username=anuraghazra&repo=github-readme-stats&show_issues=1&show_prs=1&show_age=1&age_metric=first" />
 </a>
 <a href="https://github.com/anuraghazra/convoychat">
-  <img align="center" src="https://github-readme-stats-plus-theta.vercel.app/api/pin/?username=anuraghazra&repo=convoychat&show_issues=1&show_prs=1&show_age=1&age_metric=first&v=2" />
+  <img align="center" src="https://github-readme-stats-plus-theta.vercel.app/api/pin/?username=anuraghazra&repo=convoychat&show_issues=1&show_prs=1&show_age=1&age_metric=first" />
 </a>
 
 </details>

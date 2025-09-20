@@ -72,6 +72,8 @@ describe("Test /api/pin", () => {
         text_color: "fff",
         bg_color: "fff",
         full_name: "1",
+        hide_title: "true",
+        hide_text: "true",
       },
     };
     const res = {
@@ -92,6 +94,103 @@ describe("Test /api/pin", () => {
         { ...req.query },
       ),
     );
+  });
+
+  it("should make stats_only take precedence over hide flags", async () => {
+    const req = {
+      query: {
+        username: "anuraghazra",
+        repo: "convoychat",
+        hide_title: "false",
+        hide_text: "false",
+        stats_only: "true",
+      },
+    };
+    const res = {
+      setHeader: jest.fn(),
+      send: jest.fn(),
+    };
+    mock.onPost("https://api.github.com/graphql").reply(200, data_repository);
+
+    await pin(req, res);
+
+    expect(res.setHeader).toBeCalledWith("Content-Type", "image/svg+xml");
+    const expectedSvg = renderRepoCard(
+      {
+        ...data_repo.repository,
+        starCount: data_repo.repository.stargazers.totalCount,
+      },
+      {
+        hide_border: undefined,
+        hide_title: true,
+        hide_text: true,
+        stats_only: true,
+        title_color: undefined,
+        icon_color: undefined,
+        text_color: undefined,
+        bg_color: undefined,
+        theme: undefined,
+        border_radius: undefined,
+        border_color: undefined,
+        show_owner: undefined,
+        locale: null,
+        description_lines_count: undefined,
+        show_issues: undefined,
+        show_prs: undefined,
+        show_age: undefined,
+        age_metric: "first",
+      },
+    );
+    expect(res.send).toBeCalledWith(expectedSvg);
+  });
+
+  it("should make all_stats enable issues, PRs, and age", async () => {
+    const req = {
+      query: {
+        username: "anuraghazra",
+        repo: "convoychat",
+        show_issues: "false",
+        show_prs: "false",
+        show_age: "false",
+        all_stats: "true",
+      },
+    };
+    const res = {
+      setHeader: jest.fn(),
+      send: jest.fn(),
+    };
+    mock.onPost("https://api.github.com/graphql").reply(200, data_repository);
+
+    await pin(req, res);
+
+    expect(res.setHeader).toBeCalledWith("Content-Type", "image/svg+xml");
+    const expectedSvg = renderRepoCard(
+      {
+        ...data_repo.repository,
+        starCount: data_repo.repository.stargazers.totalCount,
+      },
+      {
+        hide_border: undefined,
+        hide_title: undefined,
+        hide_text: undefined,
+        stats_only: false,
+        title_color: undefined,
+        icon_color: undefined,
+        text_color: undefined,
+        bg_color: undefined,
+        theme: undefined,
+        border_radius: undefined,
+        border_color: undefined,
+        show_owner: undefined,
+        locale: null,
+        description_lines_count: undefined,
+        show_issues: true,
+        show_prs: true,
+        show_age: true,
+        age_metric: "first",
+      },
+    );
+    expect(res.send).toBeCalledWith(expectedSvg);
   });
 
   it("should render error card if repo not found", async () => {
