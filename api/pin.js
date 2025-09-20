@@ -18,6 +18,7 @@ export default async (req, res) => {
     hide_title,
     hide_text,
     stats_only,
+    all_stats,
     title_color,
     icon_color,
     text_color,
@@ -100,8 +101,12 @@ export default async (req, res) => {
       `max-age=${cacheSeconds}, s-maxage=${cacheSeconds}`,
     );
 
-    const parsedStatsOnly = parseBoolean(stats_only);
-    const statsOnly = parsedStatsOnly === true;
+    const statsOnly = parseBoolean(stats_only) === true;
+    const allStats = parseBoolean(all_stats) === true;
+
+    const finalShowIssues = allStats ? true : parseBoolean(show_issues);
+    const finalShowPrs = allStats ? true : parseBoolean(show_prs);
+    const finalShowAge = allStats ? true : parseBoolean(show_age);
 
     return res.send(
       renderRepoCard(repoData, {
@@ -119,9 +124,9 @@ export default async (req, res) => {
         show_owner: parseBoolean(show_owner),
         locale: locale ? locale.toLowerCase() : null,
         description_lines_count,
-        show_issues: parseBoolean(show_issues),
-        show_prs: parseBoolean(show_prs),
-        show_age: parseBoolean(show_age),
+        show_issues: finalShowIssues,
+        show_prs: finalShowPrs,
+        show_age: finalShowAge,
         age_metric: age_metric || "first",
       }),
     );
