@@ -300,7 +300,7 @@ const renderRepoCard = (repo, options = {}) => {
     }
 
     <g transform="translate(${compactStatsOnlyLayout ? 20 : 30}, ${
-      hasDescription ? height - 75 : 0
+      hasDescription ? height - 75 : compactStatsOnlyLayout ? 5 : 0
     })">
       ${starAndForkCount}
     </g>
