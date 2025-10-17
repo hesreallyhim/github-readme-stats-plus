@@ -298,15 +298,7 @@ You can customize the appearance of all your cards however you wish with URL par
 > - Pin: 12 hours (min 5m, max 12h)
 > - Gist: 2 days (min 2d, max 6d)
 >
-> Note: GitHub README images are cached by Camo using the full URL. To force a refresh, change the URL by adding or bumping a `v` query param (e.g., `&v=2`). While iterating, you can also lower cache via `cache_seconds=300` on the URL, or set the `CACHE_SECONDS` env var on your own deployment to override limits.
-
-#### GitHub README (Camo) caching
-
-GitHub proxies README images through `camo.githubusercontent.com` and caches aggressively. If you update visuals or data and don’t see changes:
-
-- Add a cache‑buster: append `&v=2` (or any new value) to the image URL.
-- Optionally add `cache_seconds=300` while testing to shorten the CDN cache window.
-- After you’re satisfied, you can remove `cache_seconds` or raise it; keep `v` stable until you want Camo to refresh again.
+> Note: GitHub README images are cached by Camo using the full URL. To force a refresh, change the URL by adding or bumping a `v` (or any nonce) query param (e.g., `&v=2`). While iterating, you can also lower cache via `cache_seconds=300` on the URL, or set the `CACHE_SECONDS` env var on your own deployment to override limits.
 
 ##### Gradient in bg\_color
 
