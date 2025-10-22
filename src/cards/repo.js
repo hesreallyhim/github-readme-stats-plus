@@ -230,7 +230,8 @@ const renderRepoCard = (repo, options = {}) => {
   const rowSizes = [];
   if (svgLanguage) {
     rowItems.push(svgLanguage);
-    rowSizes.push(measureText(langName, 12));
+    // Add 9 to match deployed version's calculation
+    rowSizes.push(9 + measureText(langName, 12));
   }
   rowItems.push(svgStars);
   rowSizes.push(ICON_SIZE + measureText(`${totalStars}`, 12));
@@ -295,14 +296,9 @@ const renderRepoCard = (repo, options = {}) => {
     ${
       hasDescription
         ? `
-
-
-
     <text class="description" x="25" y="-5">
       ${descriptionSvg}
     </text>
-
-
     `
         : ""
     }
