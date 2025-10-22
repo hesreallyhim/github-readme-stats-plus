@@ -207,7 +207,12 @@ const trimTopLanguages = (topLangs, langs_count, hide) => {
  * @returns {string} Display value.
  */
 const getDisplayValue = (size, percentages, format) => {
-  return format === "bytes" ? formatBytes(size) : `${percentages.toFixed(2)}%`;
+  if (format === "bytes") {
+    return formatBytes(size);
+  }
+  // Round to 2 decimal places and remove trailing zeros
+  const rounded = Math.round(percentages * 100) / 100;
+  return `${rounded}%`;
 };
 
 /**
@@ -238,6 +243,8 @@ const createProgressTextNode = ({
   const progressWidth = width - paddingRight;
 
   const progress = (size / totalSize) * 100;
+  // Round to 2 decimal places for consistency
+  const roundedProgress = Math.round(progress * 100) / 100;
   const displayValue = getDisplayValue(size, progress, statsFormat);
 
   return `
@@ -249,7 +256,7 @@ const createProgressTextNode = ({
         y: 25,
         color,
         width: progressWidth,
-        progress,
+        progress: roundedProgress,
         progressBarBackgroundColor: "#ddd",
         delay: staggerDelay + 300,
       })}
