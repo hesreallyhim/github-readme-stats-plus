@@ -11,7 +11,7 @@ import { CACHE_TTL, DURATIONS } from "../src/common/cache.js";
 
 const data_repo = {
   repository: {
-    username: "anuraghazra",
+    nameWithOwner: "anuraghazra",
     name: "convoychat",
     stargazers: {
       totalCount: 38000,
@@ -24,6 +24,9 @@ const data_repo = {
     },
     forkCount: 100,
     isTemplate: false,
+    isPrivate: false,
+    isArchived: false,
+    firstCommitDate: "2018-10-01T00:00:00Z",
   },
 };
 
@@ -75,8 +78,8 @@ describe("Test /api/pin", () => {
         text_color: "fff",
         bg_color: "fff",
         full_name: "1",
-        hide_title: "true",
-        hide_text: "true",
+        hide_title: true,
+        hide_text: true,
       },
     };
     const res = {
@@ -118,7 +121,7 @@ describe("Test /api/pin", () => {
 
     await pin(req, res);
 
-    expect(res.setHeader).toBeCalledWith("Content-Type", "image/svg+xml");
+    expect(res.setHeader).toHaveBeenCalledWith("Content-Type", "image/svg+xml");
     const expectedSvg = renderRepoCard(
       {
         ...data_repo.repository,
@@ -137,7 +140,7 @@ describe("Test /api/pin", () => {
         border_radius: undefined,
         border_color: undefined,
         show_owner: undefined,
-        locale: null,
+        locale: undefined,
         description_lines_count: undefined,
         show_issues: undefined,
         show_prs: undefined,
@@ -145,7 +148,7 @@ describe("Test /api/pin", () => {
         age_metric: "first",
       },
     );
-    expect(res.send).toBeCalledWith(expectedSvg);
+    expect(res.send).toHaveBeenCalledWith(expectedSvg);
   });
 
   it("should make all_stats enable issues, PRs, and age", async () => {
@@ -167,7 +170,7 @@ describe("Test /api/pin", () => {
 
     await pin(req, res);
 
-    expect(res.setHeader).toBeCalledWith("Content-Type", "image/svg+xml");
+    expect(res.setHeader).toHaveBeenCalledWith("Content-Type", "image/svg+xml");
     const expectedSvg = renderRepoCard(
       {
         ...data_repo.repository,
@@ -186,7 +189,7 @@ describe("Test /api/pin", () => {
         border_radius: undefined,
         border_color: undefined,
         show_owner: undefined,
-        locale: null,
+        locale: undefined,
         description_lines_count: undefined,
         show_issues: true,
         show_prs: true,
@@ -194,7 +197,7 @@ describe("Test /api/pin", () => {
         age_metric: "first",
       },
     );
-    expect(res.send).toBeCalledWith(expectedSvg);
+    expect(res.send).toHaveBeenCalledWith(expectedSvg);
   });
 
   it("should render error card if repo not found", async () => {
@@ -214,7 +217,7 @@ describe("Test /api/pin", () => {
 
     await pin(req, res);
 
-    expect(res.setHeader).toBeCalledWith("Content-Type", "image/svg+xml");
+    expect(res.setHeader).toHaveBeenCalledWith("Content-Type", "image/svg+xml");
     expect(res.send).toHaveBeenCalledWith(
       renderError({ message: "Repository Not found" }),
     );
