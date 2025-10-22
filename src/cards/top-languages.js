@@ -210,8 +210,8 @@ const getDisplayValue = (size, percentages, format) => {
   if (format === "bytes") {
     return formatBytes(size);
   }
-  // Round to 2 decimal places and remove trailing zeros
-  const rounded = Math.round(percentages * 100) / 100;
+  // Round to 2 decimal places and remove unnecessary trailing zeros
+  const rounded = parseFloat(percentages.toFixed(2));
   return `${rounded}%`;
 };
 
