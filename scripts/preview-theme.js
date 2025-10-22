@@ -24,22 +24,25 @@ import { getGithubToken, getRepoInfo } from "./helpers.js";
 // 5) VERCEL_URL (commit URL)
 // 6) Fallback to fork production domain
 const BASE_URL = (() => {
+  let URL = "";
   if (process.env.BASE_URL) {
-    return process.env.BASE_URL;
+    URL = process.env.BASE_URL;
   }
   if (process.env.VERCEL_ENV === "production" && process.env.VERCEL_URL) {
-    return `https://${process.env.VERCEL_URL}`;
+    URL = `https://${process.env.VERCEL_URL}`;
   }
   if (process.env.VERCEL_BRANCH_URL) {
-    return `https://${process.env.VERCEL_BRANCH_URL}`;
+    URL = `https://${process.env.VERCEL_BRANCH_URL}`;
   }
   if (process.env.VERCEL_PREVIEW_URL) {
-    return process.env.VERCEL_PREVIEW_URL;
+    URL = process.env.VERCEL_PREVIEW_URL;
   }
   if (process.env.VERCEL_URL) {
-    return `https://${process.env.VERCEL_URL}`;
+    URL = `https://${process.env.VERCEL_URL}`;
   }
-  return "https://github-readme-stats-plus-theta.vercel.app";
+  URL = "https://github-readme-stats-plus-theta.vercel.app";
+  console.log(`Using URL: ${URL}`);
+  return URL;
 })();
 
 const COMMENTER = "github-actions[bot]";
