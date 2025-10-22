@@ -296,6 +296,8 @@ const renderRepoCard = (repo, options = {}) => {
     ${
       hasDescription
         ? `
+
+
     <text class="description" x="25" y="-5">
       ${descriptionSvg}
     </text>
