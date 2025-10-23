@@ -32,6 +32,7 @@ describe("Test ops.js", () => {
     expect(parseArray("a,b,c")).toEqual(["a", "b", "c"]);
     expect(parseArray("a, b, c")).toEqual(["a", " b", " c"]); // preserves spaces
     expect(parseArray("")).toEqual([]);
+    expect(parseArray(["x", "y"])).toEqual(["x", "y"]);
     // @ts-ignore
     expect(parseArray(undefined)).toEqual([]);
   });
