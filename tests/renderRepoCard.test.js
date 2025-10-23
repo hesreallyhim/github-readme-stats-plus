@@ -368,4 +368,34 @@ describe("Test renderRepoCard", () => {
     );
     expect(document.querySelector("svg")).toHaveAttribute("height", "120");
   });
+
+  it("should render issues and PR badges when enabled", () => {
+    const repoWithCounts = {
+      ...data_repo.repository,
+      openIssuesCount: 7,
+      openPrsCount: 3,
+    };
+    document.body.innerHTML = renderRepoCard(repoWithCounts, {
+      show_issues: true,
+      show_prs: true,
+    });
+
+    expect(queryByTestId(document.body, "issues")).toHaveTextContent("7");
+    expect(queryByTestId(document.body, "prs")).toHaveTextContent("3");
+  });
+
+  it("should fall back to GraphQL connections when counts are missing", () => {
+    const repoWithConnections = {
+      ...data_repo.repository,
+      issues: { totalCount: 5 },
+      pullRequests: { totalCount: 2 },
+    };
+    document.body.innerHTML = renderRepoCard(repoWithConnections, {
+      show_issues: true,
+      show_prs: true,
+    });
+
+    expect(queryByTestId(document.body, "issues")).toHaveTextContent("5");
+    expect(queryByTestId(document.body, "prs")).toHaveTextContent("2");
+  });
 });

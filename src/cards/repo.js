@@ -66,6 +66,10 @@ const renderRepoCard = (repo, options = {}) => {
   } = repo;
   const {
     hide_border = false,
+    show_issues = false,
+    show_prs = false,
+    show_age = false,
+    age_metric = "first",
     title_color,
     icon_color,
     text_color,
@@ -138,13 +142,114 @@ const renderRepoCard = (repo, options = {}) => {
     ICON_SIZE,
   );
 
+  const issuesCountRaw =
+    typeof repo.openIssuesCount === "number"
+      ? repo.openIssuesCount
+      : repo?.issues?.totalCount;
+  const prsCountRaw =
+    typeof repo.openPrsCount === "number"
+      ? repo.openPrsCount
+      : repo?.pullRequests?.totalCount;
+
+  const issuesCount =
+    typeof issuesCountRaw === "number" ? issuesCountRaw : undefined;
+  const prsCount = typeof prsCountRaw === "number" ? prsCountRaw : undefined;
+  const issuesLabel =
+    issuesCount !== undefined ? `${kFormatter(issuesCount)}` : null;
+  const prsLabel = prsCount !== undefined ? `${kFormatter(prsCount)}` : null;
+
+  const svgIssues =
+    show_issues && issuesLabel !== null
+      ? iconWithLabel(icons.issues, issuesLabel, "issues", ICON_SIZE)
+      : "";
+  const svgPRs =
+    show_prs && prsLabel !== null
+      ? iconWithLabel(icons.prs, prsLabel, "prs", ICON_SIZE)
+      : "";
+
+  const resolveAgeDate = () => {
+    if (age_metric === "created") {
+      return repo.createdAt;
+    }
+    if (age_metric === "pushed") {
+      return repo.pushedAt;
+    }
+    return repo.firstCommitDate || repo.createdAt || repo.pushedAt;
+  };
+
+  const renderAgeBadge = () => {
+    const iso = resolveAgeDate();
+    if (!show_age || !iso) {
+      return { svg: "", label: "" };
+    }
+    const then = new Date(iso).getTime();
+    const now = Date.now();
+    const diff = Math.max(0, now - then);
+    const minute = 60 * 1000;
+    const hour = 60 * minute;
+    const day = 24 * hour;
+    const month = 30 * day;
+    const year = 365 * day;
+    let label;
+    if (diff >= year) {
+      const years = Math.floor(diff / year);
+      label = `${years}y`;
+    } else if (diff >= month) {
+      const months = Math.floor(diff / month);
+      label = `${months}mo`;
+    } else if (diff >= day) {
+      const days = Math.floor(diff / day);
+      label = `${days}d`;
+    } else if (diff >= hour) {
+      const hours = Math.floor(diff / hour);
+      label = `${hours}h`;
+    } else if (diff >= minute) {
+      const minutes = Math.floor(diff / minute);
+      label = `${minutes}m`;
+    } else {
+      const seconds = Math.floor(diff / 1000);
+      label = `${seconds}s`;
+    }
+    return {
+      svg: iconWithLabel(icons.commits, label, "age", ICON_SIZE),
+      label,
+    };
+  };
+
+  const ageBadge = renderAgeBadge();
+
+  const statsItems = [];
+  const statsSizes = [];
+
+  if (svgLanguage) {
+    statsItems.push(svgLanguage);
+    statsSizes.push(measureText(langName, 12));
+  }
+
+  statsItems.push(svgStars);
+  statsSizes.push(ICON_SIZE + measureText(`${totalStars}`, 12));
+
+  statsItems.push(svgForks);
+  statsSizes.push(ICON_SIZE + measureText(`${totalForks}`, 12));
+
+  if (svgIssues && issuesLabel !== null) {
+    statsItems.push(svgIssues);
+    statsSizes.push(ICON_SIZE + measureText(issuesLabel, 12));
+  }
+
+  if (svgPRs && prsLabel !== null) {
+    statsItems.push(svgPRs);
+    statsSizes.push(ICON_SIZE + measureText(prsLabel, 12));
+  }
+
+  if (ageBadge.svg) {
+    statsItems.push(ageBadge.svg);
+    statsSizes.push(ICON_SIZE + measureText(ageBadge.label, 12));
+  }
+
   const starAndForkCount = flexLayout({
-    items: [svgLanguage, svgStars, svgForks],
-    sizes: [
-      measureText(langName, 12),
-      ICON_SIZE + measureText(`${totalStars}`, 12),
-      ICON_SIZE + measureText(`${totalForks}`, 12),
-    ],
+    items: statsItems,
+    sizes: statsSizes,
     gap: 25,
   }).join("");
 
