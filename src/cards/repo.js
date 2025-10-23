@@ -66,6 +66,9 @@ const renderRepoCard = (repo, options = {}) => {
   } = repo;
   const {
     hide_border = false,
+    hide_title = false,
+    hide_text = false,
+    stats_only = false,
     show_issues = false,
     show_prs = false,
     show_age = false,
@@ -86,6 +89,8 @@ const renderRepoCard = (repo, options = {}) => {
   const header = show_owner ? nameWithOwner : name;
   const langName = (primaryLanguage && primaryLanguage.name) || "Unspecified";
   const langColor = (primaryLanguage && primaryLanguage.color) || "#333";
+  const shouldHideTitle = stats_only || hide_title;
+  const shouldHideText = stats_only || hide_text;
   const descriptionMaxLines = description_lines_count
     ? clampValue(description_lines_count, 1, DESCRIPTION_MAX_LINES)
     : DESCRIPTION_MAX_LINES;
@@ -104,9 +109,9 @@ const renderRepoCard = (repo, options = {}) => {
     .map((line) => `<tspan dy="1.2em" x="25">${encodeHTML(line)}</tspan>`)
     .join("");
 
+  const effectiveLines = shouldHideText ? 0 : descriptionLinesCount;
   const height =
-    (descriptionLinesCount > 1 ? 120 : 110) +
-    descriptionLinesCount * lineHeight;
+    (effectiveLines > 1 ? 120 : 110) + effectiveLines * lineHeight;
 
   const i18n = new I18n({
     locale,
@@ -264,7 +269,7 @@ const renderRepoCard = (repo, options = {}) => {
 
   card.disableAnimations();
   card.setHideBorder(hide_border);
-  card.setHideTitle(false);
+  card.setHideTitle(shouldHideTitle);
   card.setCSS(`
     .description { font: 400 13px 'Segoe UI', Ubuntu, Sans-Serif; fill: ${colors.textColor} }
     .gray { font: 400 12px 'Segoe UI', Ubuntu, Sans-Serif; fill: ${colors.textColor} }
@@ -284,9 +289,15 @@ const renderRepoCard = (repo, options = {}) => {
           : ""
     }
 
+    ${
+      shouldHideText
+        ? ""
+        : `
     <text class="description" x="25" y="-5">
       ${descriptionSvg}
     </text>
+    `
+    }
 
     <g transform="translate(30, ${height - 75})">
       ${starAndForkCount}
