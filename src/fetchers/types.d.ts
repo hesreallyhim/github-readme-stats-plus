@@ -27,6 +27,7 @@ export type RepositoryData = {
   openIssuesCount?: number;
   openPrsCount?: number;
   firstCommitDate: string | null;
+  lastCommitDate: string | null;
 };
 
 export type StatsData = {

@@ -64,6 +64,9 @@ describe("Test fetchRepo", () => {
       createdAt: data_repo.repository.createdAt,
       pushedAt: data_repo.repository.pushedAt,
       firstCommitDate: data_repo.repository.createdAt,
+      lastCommitDate:
+        data_repo.repository.defaultBranchRef.target.history.nodes[0]
+          .committedDate,
     });
   });
 
@@ -80,6 +83,9 @@ describe("Test fetchRepo", () => {
       createdAt: data_repo.repository.createdAt,
       pushedAt: data_repo.repository.pushedAt,
       firstCommitDate: data_repo.repository.createdAt,
+      lastCommitDate:
+        data_repo.repository.defaultBranchRef.target.history.nodes[0]
+          .committedDate,
     });
   });
 
@@ -126,5 +132,23 @@ describe("Test fetchRepo", () => {
     await expect(fetchRepo("anuraghazra", "convoychat")).rejects.toThrow(
       "User Repository Not found",
     );
+  });
+
+  it("should set lastCommitDate to null when history missing", async () => {
+    mock.onPost("https://api.github.com/graphql").reply(200, {
+      data: {
+        user: {
+          repository: {
+            ...data_repo.repository,
+            defaultBranchRef: null,
+          },
+        },
+        organization: null,
+      },
+    });
+
+    const repo = await fetchRepo("anuraghazra", "convoychat");
+
+    expect(repo.lastCommitDate).toBeNull();
   });
 });

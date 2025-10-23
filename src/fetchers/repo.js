@@ -32,6 +32,18 @@ const fetcher = (variables, token) => {
         pullRequests(states: OPEN) {
           totalCount
         }
+        defaultBranchRef {
+          name
+          target {
+            ... on Commit {
+              history(first: 1) {
+                nodes {
+                  committedDate
+                }
+              }
+            }
+          }
+        }
         description
         primaryLanguage {
           color
@@ -101,10 +113,14 @@ const fetchRepo = async (username, reponame) => {
     if (!repository || repository.isPrivate) {
       throw new Error("User Repository Not found");
     }
+    const lastCommitDate =
+      repository?.defaultBranchRef?.target?.history?.nodes?.[0]
+        ?.committedDate || null;
     const result = {
       ...repository,
       starCount: repository.stargazers.totalCount,
       firstCommitDate: repository.createdAt || null,
+      lastCommitDate,
     };
     if (repository.issues) {
       // `issues` can be omitted entirely when disabled, so only expose the count when available.
@@ -127,10 +143,14 @@ const fetchRepo = async (username, reponame) => {
     if (!repository || repository.isPrivate) {
       throw new Error("Organization Repository Not found");
     }
+    const lastCommitDate =
+      repository?.defaultBranchRef?.target?.history?.nodes?.[0]
+        ?.committedDate || null;
     const result = {
       ...repository,
       starCount: repository.stargazers.totalCount,
       firstCommitDate: repository.createdAt || null,
+      lastCommitDate,
     };
     if (repository.issues) {
       // `issues` can be omitted entirely when disabled, so only expose the count when available.
