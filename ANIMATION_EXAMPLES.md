@@ -68,15 +68,17 @@ theme=electric_laboratory
 Five unique animation effects for your repo cards:
 
 ### 1. **bubbles** - Fishtank Effect 🐠
-Bubbles float up from the bottom like in an aquarium.
+A complete aquarium experience with bubbles, glowing jellyfish, and drifting starfish.
 ```
 animation_style=bubbles
 ```
-- 8 bubbles with varying sizes
-- Float upward with fade effect
-- Staggered animation delays
-- 3-5 second animation cycles
-- Perfect for: Calm, steady progress projects
+- 8 bubbles floating upward with varying sizes and speeds
+- 2 glowing jellyfish with wavy tentacles drifting left to right
+- 2 starfish slowly rotating and drifting right to left
+- Jellyfish appear every ~12 seconds with gentle pulsing glow
+- Starfish drift across every ~15 seconds with slow rotation
+- All creatures layered behind text for depth
+- Perfect for: Calm, steady progress projects, marine/ocean themes
 
 ### 2. **embers** - Burning Particles 🔥
 Glowing particles pulse and float like hot embers.

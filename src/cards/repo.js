@@ -56,17 +56,150 @@ const getAnimationStyle = (style, colors, width, height) => {
           />`;
       }).join("");
 
+      // Glowing jellyfish that floats across
+      const jellyfishCount = 2;
+      const jellyfish = Array.from({ length: jellyfishCount }, (_, i) => {
+        const startY = height * 0.3 + i * height * 0.25;
+        const delay = i * 12 + 2; // Appear every 12 seconds, staggered
+        const bellSize = 12 + i * 3;
+
+        return `
+          <g class="jellyfish jellyfish-${i}" style="animation-delay: ${delay}s;">
+            <!-- Jellyfish bell with glow -->
+            <ellipse
+              cx="0" cy="${startY}"
+              rx="${bellSize}" ry="${bellSize * 0.8}"
+              fill="${titleColor}"
+              opacity="0.4"
+              filter="url(#jellyfish-glow)"
+            />
+            <ellipse
+              cx="0" cy="${startY}"
+              rx="${bellSize * 0.7}" ry="${bellSize * 0.6}"
+              fill="${titleColor}"
+              opacity="0.6"
+            />
+            <!-- Wavy tentacles -->
+            ${Array.from({ length: 6 }, (_, t) => {
+              const tentacleX = -bellSize * 0.6 + t * bellSize * 0.24;
+              return `
+                <path
+                  class="tentacle tentacle-${t}"
+                  d="M ${tentacleX},${startY + bellSize * 0.6} Q ${tentacleX + 2},${startY + bellSize + 5} ${tentacleX},${startY + bellSize * 1.5 + t * 2}"
+                  stroke="${iconColor}"
+                  stroke-width="1.5"
+                  fill="none"
+                  opacity="0.5"
+                  style="animation-delay: ${delay + t * 0.1}s;"
+                />`;
+            }).join("")}
+            <!-- Animate motion path for horizontal drift -->
+            <animateMotion
+              dur="20s"
+              repeatCount="indefinite"
+              path="M -50,0 Q ${width * 0.3},${-15 + i * 8} ${width * 0.7},${8 - i * 6} T ${width + 50},0"
+              begin="${delay}s"
+            />
+          </g>`;
+      }).join("");
+
+      // Starfish that drifts across
+      const starfishCount = 2;
+      const starfish = Array.from({ length: starfishCount }, (_, i) => {
+        const startY = height * 0.5 + i * height * 0.2;
+        const delay = i * 15 + 7; // Offset from jellyfish timing
+        const size = 8 + i * 2;
+
+        // Create 5-pointed star path
+        const points =
+          Array.from({ length: 5 }, (_, p) => {
+            const angle = ((p * 72 - 90) * Math.PI) / 180;
+            const outerX = Math.cos(angle) * size;
+            const outerY = Math.sin(angle) * size;
+            const innerAngle = ((p * 72 + 36 - 90) * Math.PI) / 180;
+            const innerX = Math.cos(innerAngle) * size * 0.4;
+            const innerY = Math.sin(innerAngle) * size * 0.4;
+            return `${p === 0 ? "M" : "L"} ${outerX},${outerY} L ${innerX},${innerY}`;
+          }).join(" ") + " Z";
+
+        return `
+          <g class="starfish starfish-${i}" style="animation-delay: ${delay}s;">
+            <path
+              d="${points}"
+              fill="${iconColor}"
+              opacity="0.4"
+              stroke="${titleColor}"
+              stroke-width="0.5"
+            />
+            <!-- Animate motion from right to left with slight wave -->
+            <animateMotion
+              dur="25s"
+              repeatCount="indefinite"
+              path="M ${width + 50},${startY} Q ${width * 0.6},${startY - 10} ${width * 0.3},${startY + 8} T -50,${startY}"
+              begin="${delay}s"
+            />
+            <!-- Slow rotation -->
+            <animateTransform
+              attributeName="transform"
+              type="rotate"
+              from="0 0 0"
+              to="360 0 0"
+              dur="15s"
+              repeatCount="indefinite"
+              begin="${delay}s"
+            />
+          </g>`;
+      }).join("");
+
       const css = `
         @keyframes bubbleFloat {
           0% { transform: translateY(0) scale(1); opacity: 0.3; }
           50% { opacity: 0.5; }
           100% { transform: translateY(-${height + 20}px) scale(0.5); opacity: 0; }
         }
+        @keyframes jellyfishPulse {
+          0%, 100% { opacity: 0; }
+          10%, 90% { opacity: 1; }
+          50% { opacity: 0.8; }
+        }
+        @keyframes tentacleWave {
+          0%, 100% { transform: translateX(0); }
+          50% { transform: translateX(2px); }
+        }
+        @keyframes starfishDrift {
+          0%, 100% { opacity: 0; }
+          10%, 90% { opacity: 1; }
+        }
         .bubble {
           animation: bubbleFloat 3s infinite ease-in-out;
+        }
+        .jellyfish {
+          animation: jellyfishPulse 20s infinite ease-in-out;
+          filter: drop-shadow(0 0 4px ${titleColor}40);
+        }
+        .tentacle {
+          animation: tentacleWave 2s infinite ease-in-out;
+        }
+        .starfish {
+          animation: starfishDrift 25s infinite ease-in-out;
         }`;
 
-      return { css, svg: `<g class="animation-layer">${bubbles}</g>` };
+      // SVG filter for jellyfish glow
+      const filters = `
+        <defs>
+          <filter id="jellyfish-glow" x="-50%" y="-50%" width="200%" height="200%">
+            <feGaussianBlur stdDeviation="3" result="coloredBlur"/>
+            <feMerge>
+              <feMergeNode in="coloredBlur"/>
+              <feMergeNode in="SourceGraphic"/>
+            </feMerge>
+          </filter>
+        </defs>`;
+
+      return {
+        css,
+        svg: `<g class="animation-layer">${filters}${jellyfish}${starfish}${bubbles}</g>`,
+      };
     }
 
     case "embers": {
