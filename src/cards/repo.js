@@ -20,6 +20,260 @@ const DESCRIPTION_LINE_WIDTH = 59;
 const DESCRIPTION_MAX_LINES = 3;
 
 /**
+ * Generates animation styles and SVG elements for different effects.
+ *
+ * @param {string} style Animation style: bubbles, embers, radiant, circuit, sparks.
+ * @param {object} colors Card colors for theming animations.
+ * @param {number} width Card width.
+ * @param {number} height Card height.
+ * @returns {{css: string, svg: string}} Animation CSS and SVG elements.
+ */
+const getAnimationStyle = (style, colors, width, height) => {
+  if (!style || style === "none") {
+    return { css: "", svg: "" };
+  }
+
+  const iconColor = colors.iconColor || "38bdf8";
+  const titleColor = colors.titleColor || "00d9ff";
+
+  switch (style) {
+    case "bubbles": {
+      // Fishtank-style floating bubbles
+      const bubbles = Array.from({ length: 8 }, (_, i) => {
+        const x = (width * (i + 1)) / 9;
+        const size = 3 + (i % 3) * 2;
+        const delay = i * 0.4;
+        const duration = 3 + (i % 3);
+        return `
+          <circle
+            class="bubble bubble-${i}"
+            cx="${x}"
+            cy="${height}"
+            r="${size}"
+            fill="${iconColor}"
+            opacity="0.3"
+            style="animation-delay: ${delay}s; animation-duration: ${duration}s;"
+          />`;
+      }).join("");
+
+      const css = `
+        @keyframes bubbleFloat {
+          0% { transform: translateY(0) scale(1); opacity: 0.3; }
+          50% { opacity: 0.5; }
+          100% { transform: translateY(-${height + 20}px) scale(0.5); opacity: 0; }
+        }
+        .bubble {
+          animation: bubbleFloat 3s infinite ease-in-out;
+        }`;
+
+      return { css, svg: `<g class="animation-layer">${bubbles}</g>` };
+    }
+
+    case "embers": {
+      // Glowing particles like burning embers
+      const embers = Array.from({ length: 12 }, (_, i) => {
+        const x = 10 + Math.random() * (width - 20);
+        const y = height * 0.2 + Math.random() * (height * 0.6);
+        const size = 1.5 + Math.random() * 2;
+        const delay = i * 0.3;
+        return `
+          <circle
+            class="ember ember-${i}"
+            cx="${x}"
+            cy="${y}"
+            r="${size}"
+            fill="${titleColor}"
+            style="animation-delay: ${delay}s;"
+          />`;
+      }).join("");
+
+      const css = `
+        @keyframes emberGlow {
+          0%, 100% { opacity: 0.2; filter: blur(0px); }
+          25% { opacity: 0.8; filter: blur(1px); }
+          50% { opacity: 0.4; filter: blur(0.5px); }
+          75% { opacity: 0.9; filter: blur(1.5px); }
+        }
+        @keyframes emberFloat {
+          0%, 100% { transform: translate(0, 0); }
+          33% { transform: translate(3px, -5px); }
+          66% { transform: translate(-3px, 5px); }
+        }
+        .ember {
+          animation: emberGlow 2s infinite ease-in-out, emberFloat 4s infinite ease-in-out;
+        }`;
+
+      return { css, svg: `<g class="animation-layer">${embers}</g>` };
+    }
+
+    case "radiant": {
+      // Radiant sun with pulsing rays
+      const rays = Array.from({ length: 16 }, (_, i) => {
+        const angle = (i * 360) / 16;
+        const length = 80;
+        const x1 = width / 2;
+        const y1 = height / 2;
+        const x2 = x1 + Math.cos((angle * Math.PI) / 180) * length;
+        const y2 = y1 + Math.sin((angle * Math.PI) / 180) * length;
+        const delay = i * 0.05;
+        return `
+          <line
+            class="ray ray-${i}"
+            x1="${x1}"
+            y1="${y1}"
+            x2="${x2}"
+            y2="${y2}"
+            stroke="${iconColor}"
+            stroke-width="1.5"
+            opacity="0.2"
+            style="animation-delay: ${delay}s;"
+          />`;
+      }).join("");
+
+      const core = `
+        <circle
+          class="radiant-core"
+          cx="${width / 2}"
+          cy="${height / 2}"
+          r="8"
+          fill="${titleColor}"
+          opacity="0.3"
+        />`;
+
+      const css = `
+        @keyframes rayPulse {
+          0%, 100% { opacity: 0.1; stroke-width: 1; }
+          50% { opacity: 0.4; stroke-width: 2; }
+        }
+        @keyframes corePulse {
+          0%, 100% { opacity: 0.2; transform: scale(1); }
+          50% { opacity: 0.5; transform: scale(1.2); }
+        }
+        .ray {
+          animation: rayPulse 2s infinite ease-in-out;
+          transform-origin: ${width / 2}px ${height / 2}px;
+        }
+        .radiant-core {
+          animation: corePulse 2s infinite ease-in-out;
+          transform-origin: ${width / 2}px ${height / 2}px;
+        }`;
+
+      return { css, svg: `<g class="animation-layer">${rays}${core}</g>` };
+    }
+
+    case "circuit": {
+      // Elements traveling around the edges like circuit paths
+      const dotCount = 6;
+      const dots = Array.from({ length: dotCount }, (_, i) => {
+        const delay = i * 0.8;
+        return `
+          <circle
+            class="circuit-dot circuit-dot-${i}"
+            r="3"
+            fill="${titleColor}"
+            opacity="0.6"
+            style="animation-delay: ${delay}s;"
+          >
+            <animateMotion
+              dur="4s"
+              repeatCount="indefinite"
+              path="M 5,5 L ${width - 5},5 L ${width - 5},${height - 5} L 5,${height - 5} Z"
+              begin="${delay}s"
+            />
+          </circle>`;
+      }).join("");
+
+      // Glowing trail effect
+      const trail = `
+        <rect
+          class="circuit-glow-top"
+          x="5"
+          y="5"
+          width="${width - 10}"
+          height="1"
+          fill="${iconColor}"
+          opacity="0.2"
+        />
+        <rect
+          class="circuit-glow-right"
+          x="${width - 6}"
+          y="5"
+          width="1"
+          height="${height - 10}"
+          fill="${iconColor}"
+          opacity="0.2"
+        />
+        <rect
+          class="circuit-glow-bottom"
+          x="5"
+          y="${height - 6}"
+          width="${width - 10}"
+          height="1"
+          fill="${iconColor}"
+          opacity="0.2"
+        />
+        <rect
+          class="circuit-glow-left"
+          x="5"
+          y="5"
+          width="1"
+          height="${height - 10}"
+          fill="${iconColor}"
+          opacity="0.2"
+        />`;
+
+      const css = `
+        @keyframes circuitGlow {
+          0%, 100% { opacity: 0.1; }
+          50% { opacity: 0.4; }
+        }
+        .circuit-dot {
+          filter: drop-shadow(0 0 2px ${titleColor});
+        }
+        [class^="circuit-glow-"] {
+          animation: circuitGlow 2s infinite ease-in-out;
+        }`;
+
+      return { css, svg: `<g class="animation-layer">${trail}${dots}</g>` };
+    }
+
+    case "sparks": {
+      // Electric sparks appearing randomly
+      const sparks = Array.from({ length: 10 }, (_, i) => {
+        const x = 20 + Math.random() * (width - 40);
+        const y = 20 + Math.random() * (height - 40);
+        const delay = i * 0.5;
+        const rotation = Math.random() * 360;
+        return `
+          <g class="spark spark-${i}" transform="translate(${x}, ${y}) rotate(${rotation})" style="animation-delay: ${delay}s;">
+            <line x1="-6" y1="0" x2="6" y2="0" stroke="${titleColor}" stroke-width="2" opacity="0.8" />
+            <line x1="0" y1="-6" x2="0" y2="6" stroke="${titleColor}" stroke-width="2" opacity="0.8" />
+            <line x1="-4" y1="-4" x2="4" y2="4" stroke="${iconColor}" stroke-width="1.5" opacity="0.6" />
+            <line x1="-4" y1="4" x2="4" y2="-4" stroke="${iconColor}" stroke-width="1.5" opacity="0.6" />
+          </g>`;
+      }).join("");
+
+      const css = `
+        @keyframes sparkFlash {
+          0%, 90%, 100% { opacity: 0; transform: scale(0); }
+          5% { opacity: 1; transform: scale(1.2); }
+          10% { opacity: 0.8; transform: scale(0.9); }
+          15% { opacity: 0; transform: scale(0.6); }
+        }
+        .spark {
+          animation: sparkFlash 5s infinite ease-in-out;
+          transform-origin: center;
+        }`;
+
+      return { css, svg: `<g class="animation-layer">${sparks}</g>` };
+    }
+
+    default:
+      return { css: "", svg: "" };
+  }
+};
+
+/**
  * Retrieves the repository description and wraps it to fit the card width.
  *
  * @param {string} label The repository description.
@@ -83,6 +337,8 @@ const renderRepoCard = (repo, options = {}) => {
     show_prs = false,
     show_age = false,
     age_metric = "first",
+    animation_style = "none",
+    disable_animations = false,
   } = options;
 
   const lineHeight = 10;
@@ -269,7 +525,15 @@ const renderRepoCard = (repo, options = {}) => {
     colors,
   });
 
-  card.disableAnimations();
+  // Get animation styles if enabled
+  const hasAnimation = !disable_animations && animation_style !== "none";
+  const animationData = hasAnimation
+    ? getAnimationStyle(animation_style, colors, 400, cardHeight)
+    : { css: "", svg: "" };
+
+  if (disable_animations) {
+    card.disableAnimations();
+  }
   card.setHideBorder(hide_border);
   card.setHideTitle(shouldHideTitle);
   if (compactStatsOnlyLayout) {
@@ -281,9 +545,12 @@ const renderRepoCard = (repo, options = {}) => {
     .icon { fill: ${colors.iconColor} }
     .badge { font: 600 11px 'Segoe UI', Ubuntu, Sans-Serif; }
     .badge rect { opacity: 0.2 }
+    ${animationData.css}
   `);
 
   return card.render(`
+    ${animationData.svg}
+
     ${
       isTemplate
         ? getBadgeSVG(i18n.t("repocard.template"), colors.textColor)

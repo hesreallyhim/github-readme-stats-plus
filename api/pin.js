@@ -42,6 +42,8 @@ export default async (req, res) => {
     show_prs,
     show_age,
     age_metric,
+    animation_style,
+    disable_animations,
   } = req.query;
 
   res.setHeader("Content-Type", "image/svg+xml");
@@ -116,6 +118,8 @@ export default async (req, res) => {
         show_prs: finalShowPrs,
         show_age: finalShowAge,
         age_metric: age_metric || "first",
+        animation_style: animation_style || "none",
+        disable_animations: parseBoolean(disable_animations),
       }),
     );
   } catch (err) {

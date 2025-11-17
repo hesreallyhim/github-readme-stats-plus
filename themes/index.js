@@ -462,6 +462,41 @@ export const themes = {
     icon_color: "ffffff",
     bg_color: "35,4158d0,c850c0,ffcc70",
   },
+  mad_scientist: {
+    title_color: "00d9ff",
+    text_color: "7dd3fc",
+    icon_color: "38bdf8",
+    border_color: "0ea5e9",
+    bg_color: "0c1021",
+  },
+  mad_scientist_dark: {
+    title_color: "22d3ee",
+    text_color: "67e8f9",
+    icon_color: "06b6d4",
+    border_color: "0891b2",
+    bg_color: "020617",
+  },
+  cybernetic_lab: {
+    title_color: "3b82f6",
+    text_color: "60a5fa",
+    icon_color: "2563eb",
+    border_color: "1d4ed8",
+    bg_color: "0a0e1a",
+  },
+  robot_blue: {
+    title_color: "0ea5e9",
+    text_color: "7dd3fc",
+    icon_color: "38bdf8",
+    border_color: "0284c7",
+    bg_color: "082f49",
+  },
+  electric_laboratory: {
+    title_color: "00ffff",
+    text_color: "5eead4",
+    icon_color: "2dd4bf",
+    border_color: "14b8a6",
+    bg_color: "0f172a",
+  },
 };
 
 export default themes;
