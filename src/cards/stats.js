@@ -64,11 +64,11 @@ const getRankAnimation = (style, colors, rankLevel) => {
   const titleColor = colors.titleColor || "2f80ed";
 
   if (style === "eye") {
-    // Blinking eyeball animation!
+    // Blinking eyeball animation - eyelids that slide together like doors!
     return {
       svg: `
         <!-- Eyeball white -->
-        <circle cx="-10" cy="8" r="38" fill="#ffffff" stroke="${ringColor}" stroke-width="2" opacity="0.9"/>
+        <circle cx="-10" cy="8" r="38" fill="#ffffff" stroke="#${ringColor}" stroke-width="2" opacity="0.9"/>
 
         <!-- Iris (colored circle) -->
         <circle cx="-10" cy="8" r="18" fill="#${titleColor}" opacity="0.8"/>
@@ -79,29 +79,28 @@ const getRankAnimation = (style, colors, rankLevel) => {
         <!-- Highlight (makes it look shiny) -->
         <circle cx="-15" cy="3" r="5" fill="#ffffff" opacity="0.7"/>
 
-        <!-- Eyelids (animated) -->
-        <g class="eyelid-top">
-          <ellipse cx="-10" cy="-30" rx="40" ry="40" fill="${ringColor}" opacity="0.95"/>
-        </g>
-        <g class="eyelid-bottom">
-          <ellipse cx="-10" cy="46" rx="40" ry="40" fill="${ringColor}" opacity="0.95"/>
-        </g>
+        <!-- Eyelids (rectangular doors that slide from top and bottom) -->
+        <!-- Top eyelid covers top half of eye (y=-30 to y=8) -->
+        <rect class="eyelid-top" x="-50" y="-30" width="80" height="38" fill="#${ringColor}" opacity="0.95"/>
+
+        <!-- Bottom eyelid covers bottom half of eye (y=8 to y=46) -->
+        <rect class="eyelid-bottom" x="-50" y="8" width="80" height="38" fill="#${ringColor}" opacity="0.95"/>
       `,
       css: `
-        @keyframes blink {
+        @keyframes blinkTop {
           0%, 45%, 55%, 100% {
-            transform: translateY(0);
+            transform: translateY(-38px);
           }
           50% {
-            transform: translateY(38px);
+            transform: translateY(0);
           }
         }
         @keyframes blinkBottom {
           0%, 45%, 55%, 100% {
-            transform: translateY(0);
+            transform: translateY(38px);
           }
           50% {
-            transform: translateY(-38px);
+            transform: translateY(0);
           }
         }
         @keyframes pupilDilate {
@@ -109,7 +108,7 @@ const getRankAnimation = (style, colors, rankLevel) => {
           50% { r: 10px; }
         }
         .eyelid-top {
-          animation: blink 4s infinite ease-in-out;
+          animation: blinkTop 4s infinite ease-in-out;
         }
         .eyelid-bottom {
           animation: blinkBottom 4s infinite ease-in-out;
