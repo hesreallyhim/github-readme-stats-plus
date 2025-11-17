@@ -20,6 +20,25 @@ const DESCRIPTION_LINE_WIDTH = 59;
 const DESCRIPTION_MAX_LINES = 3;
 
 /**
+ * Wraps each character of text in a tspan with staggered animation delay for wave effect.
+ *
+ * @param {string} text The text to wrap.
+ * @param {number} baseDelay Base delay in seconds before wave starts.
+ * @param {number} delayPerChar Delay in seconds between each character.
+ * @returns {string} SVG tspan elements with wave animation.
+ */
+const wrapTextInWave = (text, baseDelay = 0, delayPerChar = 0.05) => {
+  return Array.from(text)
+    .map((char, i) => {
+      const delay = baseDelay + i * delayPerChar;
+      // Preserve spaces
+      const displayChar = char === " " ? "\u00A0" : char;
+      return `<tspan class="wave-char" style="animation-delay: ${delay}s">${displayChar}</tspan>`;
+    })
+    .join("");
+};
+
+/**
  * Generates animation styles and SVG elements for different effects.
  *
  * @param {string} style Animation style: bubbles, embers, radiant, circuit, sparks.
@@ -170,22 +189,9 @@ const getAnimationStyle = (style, colors, width, height) => {
           0%, 100% { opacity: 0; }
           10%, 90% { opacity: 1; }
         }
-        @keyframes textFloatWave {
+        @keyframes letterWave {
           0%, 100% { transform: translateY(0px); }
-          25% { transform: translateY(-2px); }
-          50% { transform: translateY(0px); }
-          75% { transform: translateY(2px); }
-        }
-        @keyframes textFloatWave2 {
-          0%, 100% { transform: translateY(0px); }
-          25% { transform: translateY(2px); }
-          50% { transform: translateY(0px); }
-          75% { transform: translateY(-2px); }
-        }
-        @keyframes textFloatWave3 {
-          0%, 100% { transform: translateY(0px); }
-          33% { transform: translateY(-1.5px); }
-          66% { transform: translateY(1.5px); }
+          50% { transform: translateY(-3px); }
         }
         .bubble {
           animation: bubbleFloat 3s infinite ease-in-out;
@@ -200,28 +206,9 @@ const getAnimationStyle = (style, colors, width, height) => {
         .starfish {
           animation: starfishDrift 25s infinite ease-in-out;
         }
-        /* Floating text effects - like text bobbing in water */
-        .header {
-          animation: fadeInAnimation 0.8s ease-in-out forwards, textFloatWave 4s ease-in-out infinite !important;
-        }
-        .description {
-          animation: textFloatWave2 3.5s ease-in-out infinite;
-        }
-        .description tspan:nth-child(1) {
-          animation: textFloatWave 3.8s ease-in-out infinite;
-        }
-        .description tspan:nth-child(2) {
-          animation: textFloatWave2 3.5s ease-in-out 0.3s infinite;
-        }
-        .description tspan:nth-child(3) {
-          animation: textFloatWave3 4.2s ease-in-out 0.6s infinite;
-        }
-        .gray {
-          animation: textFloatWave3 3.2s ease-in-out 0.2s infinite;
-        }
-        /* Stats floating */
-        g[data-testid="main-card-body"] > g {
-          animation: textFloatWave2 3.8s ease-in-out 0.4s infinite;
+        /* Character-by-character wave effect */
+        .wave-char {
+          animation: letterWave 2s ease-in-out infinite;
         }`;
 
       // SVG filter for jellyfish glow
@@ -704,11 +691,17 @@ const renderRepoCard = (repo, options = {}) => {
     ? getAnimationStyle(animation_style, colors, 400, cardHeight)
     : { css: "", svg: "" };
 
+  // Check if we should add wave effect to text
+  const useBubblesWave = animation_style === "bubbles" && !disable_animations;
+
   if (disable_animations) {
     card.disableAnimations();
   }
   card.setHideBorder(hide_border);
+
+  // Only hide title if explicitly requested (not for wave effect)
   card.setHideTitle(shouldHideTitle);
+
   if (compactStatsOnlyLayout) {
     card.paddingX = 25;
   }
@@ -718,11 +711,40 @@ const renderRepoCard = (repo, options = {}) => {
     .icon { fill: ${colors.iconColor} }
     .badge { font: 600 11px 'Segoe UI', Ubuntu, Sans-Serif; }
     .badge rect { opacity: 0.2 }
+    .wave-title { font: 600 18px 'Segoe UI', Ubuntu, Sans-Serif; fill: ${colors.titleColor}; }
+    @supports(-moz-appearance: auto) {
+      .wave-title { font-size: 15.5px; }
+    }
+    ${useBubblesWave ? `g[data-testid="card-title"]:not(:has(.wave-title)) { display: none; }` : ""}
     ${animationData.css}
   `);
 
+  // Create custom wave title if needed
+  const customWaveTitle =
+    useBubblesWave && !shouldHideTitle
+      ? `
+    <g data-testid="card-title" transform="translate(${card.paddingX}, ${card.paddingY})">
+      <svg
+        class="icon"
+        x="0"
+        y="-13"
+        viewBox="0 0 16 16"
+        version="1.1"
+        width="16"
+        height="16"
+      >
+        ${icons.contribs}
+      </svg>
+      <text x="25" y="0" class="wave-title" data-testid="header">
+        ${wrapTextInWave(header.length > 35 ? `${header.slice(0, 35)}...` : header)}
+      </text>
+    </g>
+  `
+      : "";
+
   return card.render(`
     ${animationData.svg}
+    ${customWaveTitle}
 
     ${
       isTemplate
