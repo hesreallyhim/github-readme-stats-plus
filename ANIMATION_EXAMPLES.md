@@ -76,14 +76,28 @@ animation_style=bubbles
 - 2 glowing jellyfish with wavy tentacles drifting left to right
 - 2 starfish slowly rotating and drifting right to left
 - **🌊 Horizontal wave text effect**: Letters ripple like a wave traveling across the text
-  - Each character animates individually with a staggered delay (0.05s per letter)
+  - Each character animates individually with a staggered delay
   - Creates a smooth left-to-right wave motion across the title
-  - 2-second wave cycle with 3px vertical movement
-  - Like text floating and undulating in water
+  - Fully customizable wave parameters (see below)
+  - Optional color-morphing gradient effect
 - Jellyfish appear every ~12 seconds with gentle pulsing glow
 - Starfish drift across every ~15 seconds with slow rotation
 - All creatures layered behind text for depth
 - Perfect for: Calm, steady progress projects, marine/ocean themes, underwater aesthetics
+
+**Wave Customization Parameters:**
+- `wave_speed` - Wave cycle duration in seconds (default: `2`)
+  - Lower = faster wave, Higher = slower wave
+  - Example: `wave_speed=1.5` for faster waves
+- `wave_amplitude` - Vertical movement in pixels (default: `3`)
+  - How high each letter bounces
+  - Example: `wave_amplitude=5` for bigger waves
+- `wave_delay` - Delay between each character in seconds (default: `0.05`)
+  - Controls how quickly wave travels horizontally
+  - Example: `wave_delay=0.08` for slower wave travel
+- `color_morph` - Enable color morphing gradient (default: `false`)
+  - Letters cycle through theme colors
+  - Example: `color_morph=true`
 
 ### 2. **embers** - Burning Particles 🔥
 Glowing particles pulse and float like hot embers.
@@ -148,6 +162,21 @@ animation_style=sparks
 ![Repo Card](https://your-domain.vercel.app/api/pin?username=hesreallyhim&repo=your-repo&theme=robot_blue&animation_style=sparks&show_owner=true&all_stats=true)
 ```
 
+### Custom Wave Effect (Fast & Big)
+```markdown
+![Repo Card](https://your-domain.vercel.app/api/pin?username=hesreallyhim&repo=your-repo&theme=mad_scientist&animation_style=bubbles&wave_speed=1&wave_amplitude=6&wave_delay=0.03)
+```
+
+### Color Morphing Wave
+```markdown
+![Repo Card](https://your-domain.vercel.app/api/pin?username=hesreallyhim&repo=your-repo&theme=electric_laboratory&animation_style=bubbles&color_morph=true)
+```
+
+### Slow Gentle Wave
+```markdown
+![Repo Card](https://your-domain.vercel.app/api/pin?username=hesreallyhim&repo=your-repo&theme=robot_blue&animation_style=bubbles&wave_speed=3&wave_amplitude=2&wave_delay=0.08)
+```
+
 ### Disable Animations (for static images)
 ```markdown
 ![Repo Card](https://your-domain.vercel.app/api/pin?username=hesreallyhim&repo=your-repo&theme=electric_laboratory&disable_animations=true)
@@ -201,6 +230,28 @@ Dark background with pulsing radiant center - excellent for core libraries.
 - `disable_animations` - Disable all animations
   - Options: `true`, `false`
   - Default: `false`
+
+### Wave Customization Parameters (bubbles only)
+- `wave_speed` - Duration of one wave cycle in seconds
+  - Range: `0.5` to `5` (recommended)
+  - Default: `2`
+  - Example: `wave_speed=1.5` (faster)
+
+- `wave_amplitude` - Vertical movement height in pixels
+  - Range: `1` to `10` (recommended)
+  - Default: `3`
+  - Example: `wave_amplitude=5` (bigger waves)
+
+- `wave_delay` - Delay between each character in seconds
+  - Range: `0.01` to `0.2` (recommended)
+  - Default: `0.05`
+  - Example: `wave_delay=0.08` (slower horizontal travel)
+
+- `color_morph` - Enable color morphing gradient effect
+  - Options: `true`, `false`
+  - Default: `false`
+  - Cycles through title, icon, and text colors
+  - Example: `color_morph=true`
 
 ### All Compatible Parameters
 You can combine animations with all existing repo card parameters:

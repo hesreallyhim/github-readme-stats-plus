@@ -25,15 +25,22 @@ const DESCRIPTION_MAX_LINES = 3;
  * @param {string} text The text to wrap.
  * @param {number} baseDelay Base delay in seconds before wave starts.
  * @param {number} delayPerChar Delay in seconds between each character.
+ * @param {boolean} colorMorph Whether to enable color morphing effect.
  * @returns {string} SVG tspan elements with wave animation.
  */
-const wrapTextInWave = (text, baseDelay = 0, delayPerChar = 0.05) => {
+const wrapTextInWave = (
+  text,
+  baseDelay = 0,
+  delayPerChar = 0.05,
+  colorMorph = false,
+) => {
   return Array.from(text)
     .map((char, i) => {
       const delay = baseDelay + i * delayPerChar;
       // Preserve spaces
       const displayChar = char === " " ? "\u00A0" : char;
-      return `<tspan class="wave-char" style="animation-delay: ${delay}s">${displayChar}</tspan>`;
+      const morphClass = colorMorph ? " wave-char-morph" : "";
+      return `<tspan class="wave-char${morphClass}" style="animation-delay: ${delay}s">${displayChar}</tspan>`;
     })
     .join("");
 };
@@ -45,15 +52,21 @@ const wrapTextInWave = (text, baseDelay = 0, delayPerChar = 0.05) => {
  * @param {object} colors Card colors for theming animations.
  * @param {number} width Card width.
  * @param {number} height Card height.
+ * @param {object} waveParams Wave animation parameters.
  * @returns {{css: string, svg: string}} Animation CSS and SVG elements.
  */
-const getAnimationStyle = (style, colors, width, height) => {
+const getAnimationStyle = (style, colors, width, height, waveParams = {}) => {
   if (!style || style === "none") {
     return { css: "", svg: "" };
   }
 
   const iconColor = colors.iconColor || "38bdf8";
   const titleColor = colors.titleColor || "00d9ff";
+  const textColor = colors.textColor || "434d58";
+
+  // Wave parameters with defaults
+  const waveSpeed = waveParams.speed || 2; // seconds
+  const waveAmplitude = waveParams.amplitude || 3; // pixels
 
   switch (style) {
     case "bubbles": {
@@ -191,7 +204,14 @@ const getAnimationStyle = (style, colors, width, height) => {
         }
         @keyframes letterWave {
           0%, 100% { transform: translateY(0px); }
-          50% { transform: translateY(-3px); }
+          50% { transform: translateY(-${waveAmplitude}px); }
+        }
+        @keyframes colorMorph {
+          0% { fill: #${titleColor}; }
+          25% { fill: #${iconColor}; }
+          50% { fill: #${textColor}; }
+          75% { fill: #${iconColor}; }
+          100% { fill: #${titleColor}; }
         }
         .bubble {
           animation: bubbleFloat 3s infinite ease-in-out;
@@ -208,7 +228,11 @@ const getAnimationStyle = (style, colors, width, height) => {
         }
         /* Character-by-character wave effect */
         .wave-char {
-          animation: letterWave 2s ease-in-out infinite;
+          animation: letterWave ${waveSpeed}s ease-in-out infinite;
+        }
+        /* Color morphing effect */
+        .wave-char-morph {
+          animation: letterWave ${waveSpeed}s ease-in-out infinite, colorMorph ${waveSpeed * 3}s ease-in-out infinite;
         }`;
 
       // SVG filter for jellyfish glow
@@ -499,6 +523,10 @@ const renderRepoCard = (repo, options = {}) => {
     age_metric = "first",
     animation_style = "none",
     disable_animations = false,
+    wave_speed = 2,
+    wave_amplitude = 3,
+    wave_delay = 0.05,
+    color_morph = false,
   } = options;
 
   const lineHeight = 10;
@@ -687,8 +715,14 @@ const renderRepoCard = (repo, options = {}) => {
 
   // Get animation styles if enabled
   const hasAnimation = !disable_animations && animation_style !== "none";
+  const waveParams = {
+    speed: wave_speed,
+    amplitude: wave_amplitude,
+    delay: wave_delay,
+    colorMorph: color_morph,
+  };
   const animationData = hasAnimation
-    ? getAnimationStyle(animation_style, colors, 400, cardHeight)
+    ? getAnimationStyle(animation_style, colors, 400, cardHeight, waveParams)
     : { css: "", svg: "" };
 
   // Check if we should add wave effect to text
@@ -736,7 +770,7 @@ const renderRepoCard = (repo, options = {}) => {
         ${icons.contribs}
       </svg>
       <text x="25" y="0" class="wave-title" data-testid="header">
-        ${wrapTextInWave(header.length > 35 ? `${header.slice(0, 35)}...` : header)}
+        ${wrapTextInWave(header.length > 35 ? `${header.slice(0, 35)}...` : header, 0, wave_delay, color_morph)}
       </text>
     </g>
   `

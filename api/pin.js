@@ -44,6 +44,10 @@ export default async (req, res) => {
     age_metric,
     animation_style,
     disable_animations,
+    wave_speed,
+    wave_amplitude,
+    wave_delay,
+    color_morph,
   } = req.query;
 
   res.setHeader("Content-Type", "image/svg+xml");
@@ -120,6 +124,10 @@ export default async (req, res) => {
         age_metric: age_metric || "first",
         animation_style: animation_style || "none",
         disable_animations: parseBoolean(disable_animations),
+        wave_speed: wave_speed ? parseFloat(wave_speed) : 2,
+        wave_amplitude: wave_amplitude ? parseFloat(wave_amplitude) : 3,
+        wave_delay: wave_delay ? parseFloat(wave_delay) : 0.05,
+        color_morph: parseBoolean(color_morph),
       }),
     );
   } catch (err) {
