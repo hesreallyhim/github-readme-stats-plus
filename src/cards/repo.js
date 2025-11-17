@@ -170,6 +170,23 @@ const getAnimationStyle = (style, colors, width, height) => {
           0%, 100% { opacity: 0; }
           10%, 90% { opacity: 1; }
         }
+        @keyframes textFloatWave {
+          0%, 100% { transform: translateY(0px); }
+          25% { transform: translateY(-2px); }
+          50% { transform: translateY(0px); }
+          75% { transform: translateY(2px); }
+        }
+        @keyframes textFloatWave2 {
+          0%, 100% { transform: translateY(0px); }
+          25% { transform: translateY(2px); }
+          50% { transform: translateY(0px); }
+          75% { transform: translateY(-2px); }
+        }
+        @keyframes textFloatWave3 {
+          0%, 100% { transform: translateY(0px); }
+          33% { transform: translateY(-1.5px); }
+          66% { transform: translateY(1.5px); }
+        }
         .bubble {
           animation: bubbleFloat 3s infinite ease-in-out;
         }
@@ -182,6 +199,29 @@ const getAnimationStyle = (style, colors, width, height) => {
         }
         .starfish {
           animation: starfishDrift 25s infinite ease-in-out;
+        }
+        /* Floating text effects - like text bobbing in water */
+        .header {
+          animation: fadeInAnimation 0.8s ease-in-out forwards, textFloatWave 4s ease-in-out infinite !important;
+        }
+        .description {
+          animation: textFloatWave2 3.5s ease-in-out infinite;
+        }
+        .description tspan:nth-child(1) {
+          animation: textFloatWave 3.8s ease-in-out infinite;
+        }
+        .description tspan:nth-child(2) {
+          animation: textFloatWave2 3.5s ease-in-out 0.3s infinite;
+        }
+        .description tspan:nth-child(3) {
+          animation: textFloatWave3 4.2s ease-in-out 0.6s infinite;
+        }
+        .gray {
+          animation: textFloatWave3 3.2s ease-in-out 0.2s infinite;
+        }
+        /* Stats floating */
+        g[data-testid="main-card-body"] > g {
+          animation: textFloatWave2 3.8s ease-in-out 0.4s infinite;
         }`;
 
       // SVG filter for jellyfish glow
