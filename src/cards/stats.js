@@ -52,6 +52,152 @@ const LONG_LOCALES = [
 ];
 
 /**
+ * Generates creative rank circle animations.
+ *
+ * @param {string} style Animation style: eye, fire, default.
+ * @param {object} colors Card colors for theming.
+ * @param {string} rankLevel The rank level (A, B, C, etc.).
+ * @returns {{svg: string, css: string}} Animation SVG and CSS.
+ */
+const getRankAnimation = (style, colors, rankLevel) => {
+  const ringColor = colors.ringColor || "4c71f2";
+  const titleColor = colors.titleColor || "2f80ed";
+
+  if (style === "eye") {
+    // Blinking eyeball animation - eyelids that slide together like doors!
+    return {
+      svg: `
+        <!-- Eyeball white -->
+        <circle cx="-10" cy="8" r="38" fill="#ffffff" stroke="#${ringColor}" stroke-width="2" opacity="0.9"/>
+
+        <!-- Iris (colored circle) -->
+        <circle cx="-10" cy="8" r="18" fill="#${titleColor}" opacity="0.8"/>
+
+        <!-- Pupil (black center) -->
+        <circle class="pupil" cx="-10" cy="8" r="8" fill="#000000"/>
+
+        <!-- Highlight (makes it look shiny) -->
+        <circle cx="-15" cy="3" r="5" fill="#ffffff" opacity="0.7"/>
+
+        <!-- Eyelids (rectangular doors that slide from top and bottom) -->
+        <!-- Top eyelid covers top half of eye (y=-30 to y=8) -->
+        <rect class="eyelid-top" x="-50" y="-30" width="80" height="38" fill="#${ringColor}" opacity="0.95"/>
+
+        <!-- Bottom eyelid covers bottom half of eye (y=8 to y=46) -->
+        <rect class="eyelid-bottom" x="-50" y="8" width="80" height="38" fill="#${ringColor}" opacity="0.95"/>
+      `,
+      css: `
+        @keyframes blinkTop {
+          0%, 45%, 55%, 100% {
+            transform: translateY(-38px);
+          }
+          50% {
+            transform: translateY(0);
+          }
+        }
+        @keyframes blinkBottom {
+          0%, 45%, 55%, 100% {
+            transform: translateY(38px);
+          }
+          50% {
+            transform: translateY(0);
+          }
+        }
+        @keyframes pupilDilate {
+          0%, 100% { r: 8px; }
+          50% { r: 10px; }
+        }
+        .eyelid-top {
+          animation: blinkTop 4s infinite ease-in-out;
+        }
+        .eyelid-bottom {
+          animation: blinkBottom 4s infinite ease-in-out;
+        }
+        .pupil {
+          animation: pupilDilate 3s infinite ease-in-out;
+        }
+      `,
+    };
+  } else if (style === "fire") {
+    // Ring of fire animation!
+    const flames = Array.from({ length: 12 }, (_, i) => {
+      const angle = (i * 360) / 12;
+      const x = -10 + Math.cos((angle * Math.PI) / 180) * 45;
+      const y = 8 + Math.sin((angle * Math.PI) / 180) * 45;
+      const delay = i * 0.1;
+      return `
+        <g class="flame flame-${i}" transform="translate(${x}, ${y})" style="animation-delay: ${delay}s">
+          <path d="M 0,-8 Q -3,-4 -2,0 Q -1,4 0,6 Q 1,4 2,0 Q 3,-4 0,-8 Z"
+                fill="url(#fireGradient)" opacity="0.9"/>
+        </g>`;
+    }).join("");
+
+    return {
+      svg: `
+        <defs>
+          <linearGradient id="fireGradient" x1="0%" y1="0%" x2="0%" y2="100%">
+            <stop offset="0%" style="stop-color:#ffff00;stop-opacity:1" />
+            <stop offset="50%" style="stop-color:#ff6600;stop-opacity:1" />
+            <stop offset="100%" style="stop-color:#ff0000;stop-opacity:0.8" />
+          </linearGradient>
+          <radialGradient id="emberGlow">
+            <stop offset="0%" style="stop-color:#ffaa00;stop-opacity:0.8" />
+            <stop offset="100%" style="stop-color:#ff0000;stop-opacity:0" />
+          </radialGradient>
+        </defs>
+
+        <!-- Inner glow -->
+        <circle cx="-10" cy="8" r="42" fill="url(#emberGlow)" opacity="0.6"/>
+
+        <!-- Ring base -->
+        <circle cx="-10" cy="8" r="40" fill="none" stroke="#ff4400" stroke-width="4" opacity="0.5"/>
+
+        <!-- Flames -->
+        ${flames}
+
+        <!-- Center (show rank letter on fire) -->
+        <text x="-5" y="3" alignment-baseline="central" dominant-baseline="central"
+              text-anchor="middle" class="fire-rank-text" fill="#ffff00" stroke="#ff6600" stroke-width="1"
+              font-size="28" font-weight="bold" filter="url(#fireTextGlow)">
+          ${rankLevel}
+        </text>
+
+        <defs>
+          <filter id="fireTextGlow">
+            <feGaussianBlur stdDeviation="2" result="coloredBlur"/>
+            <feMerge>
+              <feMergeNode in="coloredBlur"/>
+              <feMergeNode in="SourceGraphic"/>
+            </feMerge>
+          </filter>
+        </defs>
+      `,
+      css: `
+        @keyframes flicker {
+          0%, 100% {transform: scale(1) translateY(0); opacity: 0.9;}
+          25% { transform: scale(1.1) translateY(-2px); opacity: 1; }
+          50% { transform: scale(0.95) translateY(1px); opacity: 0.8; }
+          75% { transform: scale(1.05) translateY(-1px); opacity: 0.95; }
+        }
+        @keyframes fireGlow {
+          0%, 100% { opacity: 0.6; }
+          50% { opacity: 0.9; }
+        }
+        .flame {
+          animation: flicker 1.5s infinite ease-in-out;
+        }
+        .fire-rank-text {
+          animation: fireGlow 2s infinite ease-in-out;
+        }
+      `,
+    };
+  }
+
+  // Default: return empty (will use standard rank circle)
+  return { svg: "", css: "" };
+};
+
+/**
  * Create a stats card text item.
  *
  * @param {object} params Object that contains the createTextNode parameters.
@@ -175,6 +321,7 @@ const getStyles = ({
   ringColor,
   show_icons,
   progress,
+  rankAnimationCss = "",
 }) => {
   return `
     .stat {
@@ -198,7 +345,7 @@ const getStyles = ({
     .rank-percentile-text {
       font-size: 16px;
     }
-    
+
     .not_bold { font-weight: 400 }
     .bold { font-weight: 700 }
     .icon {
@@ -224,6 +371,7 @@ const getStyles = ({
       animation: rankAnimation 1s forwards ease-in-out;
     }
     ${process.env.NODE_ENV === "test" ? "" : getProgressAnimation({ progress })}
+    ${rankAnimationCss}
   `;
 };
 
@@ -294,6 +442,7 @@ const renderStatsCard = (stats, options = {}) => {
     locale,
     disable_animations = false,
     rank_icon = "default",
+    rank_animation = "default",
     show = [],
   } = options;
 
@@ -451,6 +600,21 @@ const renderStatsCard = (stats, options = {}) => {
 
   // the lower the user's percentile the better
   const progress = 100 - rank.percentile;
+
+  // Get rank animation if specified
+  const rankAnimationData =
+    rank_animation === "default"
+      ? { svg: "", css: "" }
+      : getRankAnimation(
+          rank_animation,
+          {
+            titleColor,
+            ringColor,
+            textColor,
+          },
+          rank.level,
+        );
+
   const cssStyles = getStyles({
     titleColor,
     ringColor,
@@ -458,6 +622,7 @@ const renderStatsCard = (stats, options = {}) => {
     iconColor,
     show_icons,
     progress,
+    rankAnimationCss: rankAnimationData.css,
   });
 
   const calculateTextWidth = () => {
@@ -553,16 +718,23 @@ const renderStatsCard = (stats, options = {}) => {
   // Conditionally rendered elements
   const rankCircle = hide_rank
     ? ""
-    : `<g data-testid="rank-circle"
-          transform="translate(${calculateRankXTranslation()}, ${
-            height / 2 - 50
-          })">
-        <circle class="rank-circle-rim" cx="-10" cy="8" r="40" />
-        <circle class="rank-circle" cx="-10" cy="8" r="40" />
-        <g class="rank-text">
-          ${rankIcon(rank_icon, rank?.level, rank?.percentile)}
-        </g>
-      </g>`;
+    : rank_animation === "default"
+      ? `<g data-testid="rank-circle"
+            transform="translate(${calculateRankXTranslation()}, ${
+              height / 2 - 50
+            })">
+          <circle class="rank-circle-rim" cx="-10" cy="8" r="40" />
+          <circle class="rank-circle" cx="-10" cy="8" r="40" />
+          <g class="rank-text">
+            ${rankIcon(rank_icon, rank?.level, rank?.percentile)}
+          </g>
+        </g>`
+      : `<g data-testid="rank-circle"
+            transform="translate(${calculateRankXTranslation()}, ${
+              height / 2 - 50
+            })">
+          ${rankAnimationData.svg}
+        </g>`;
 
   // Accessibility Labels
   const labels = Object.keys(STATS)
